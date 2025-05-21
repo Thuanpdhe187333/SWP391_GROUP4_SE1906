@@ -77,4 +77,41 @@ public class ProductDAO {
             System.out.println(e);
         }
     }
+
+    public void deleteProduct(int productID){
+        String sql = "delete from Products where ProductID = ?";
+        try {
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setInt(1, productID);
+            ps.executeUpdate();
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+        
+    }
+    
+    public Product getProductById(int productID) {
+    String sql = "SELECT * FROM Products WHERE ProductID = ?";
+    try {
+        PreparedStatement ps = connection.prepareStatement(sql);
+        ps.setInt(1, productID);
+        ResultSet rs = ps.executeQuery();
+        if (rs.next()) {
+            Integer labelID = rs.getObject("LabelID") != null ? rs.getInt("LabelID") : null;
+            return new Product(
+                rs.getInt("ProductID"),
+                rs.getString("ProductName"),
+                rs.getString("Description"),
+                rs.getDouble("price"),
+                rs.getInt("quantity"),
+                rs.getInt("CategoryID"),
+                    rs.getTimestamp("CreatedAt"),
+                labelID
+            );
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return null;
+    }
 }
