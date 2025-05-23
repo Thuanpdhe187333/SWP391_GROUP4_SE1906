@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+     <title>FeedBack Card</title>
+        <link rel="stylesheet" href="styles.css"> 
+    
+</head>
+<body>  
+    <div class="feedback-card"> 
+        <h2>How did we do!</h2>
+    <div class="rating-container">
+        <button class="rating-emoji" data-rating="1">😠</button>
+        <button class="rating-emoji" data-rating="2">😕</button>
+        <button class="rating-emoji" data-rating="3">😐</button>
+        <button class="rating-emoji" data-rating="4">😊</button>
+        <button class="rating-emoji" data-rating="5">😍</button>
+    </div>
+    <textarea placeholder="Share you thoughts..."></textarea>
+    <button class="sumbit-btn" onclick="showPopup()"></button>
+</div>
+<div class="popup-overplay" id="popup">
+    <div class="popup-content">
+     <div class="checkmark"></div>
+     <h3>Thank you</h3>
+     <p>Your feedback halp us improve</p>
+     <button class="sumbit-btn" onclick="closePopup() "style="margin-top: 1rem">Close</button>
+     </div>
+</div>
+<script src="script.js"></script>
+</body>
+</html>
