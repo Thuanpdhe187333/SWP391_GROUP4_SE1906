@@ -1,0 +1,85 @@
+package dal;
+
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.List;
+import model.Cart;
+
+public class CartDAO extends DBContext {
+
+    // Lấy danh sách sản phẩm trong giỏ hàng của một người dùng
+    public List<Cart> getCartByUserID(int userID) {
+        List<Cart> list = new ArrayList<>();
+        String sql = "SELECT * FROM Cart WHERE UserID = ?";
+        try {
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setInt(1, userID);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Cart c = new Cart(
+                    rs.getInt("CartID"),
+                    rs.getInt("UserID"),
+                    rs.getInt("ProductID"),
+                    rs.getInt("Quantity"),
+                    rs.getTimestamp("AddedDate")
+                );
+                list.add(c);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    // Thêm sản phẩm vào giỏ hàng
+    public void addToCart(int userID, int productID, int quantity) {
+        String sql = "INSERT INTO Cart (UserID, ProductID, Quantity) VALUES (?, ?, ?)";
+        try {
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setInt(1, userID);
+            ps.setInt(2, productID);
+            ps.setInt(3, quantity);
+            ps.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    // Cập nhật số lượng sản phẩm trong giỏ
+    public void updateQuantity(int cartID, int quantity) {
+        String sql = "UPDATE Cart SET Quantity = ? WHERE CartID = ?";
+        try {
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setInt(1, quantity);
+            ps.setInt(2, cartID);
+            ps.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    // Xóa một sản phẩm khỏi giỏ hàng
+    public void removeFromCart(int cartID) {
+        String sql = "DELETE FROM Cart WHERE CartID = ?";
+        try {
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setInt(1, cartID);
+            ps.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    // Xóa toàn bộ giỏ hàng của người dùng (ví dụ khi thanh toán xong)
+    public void clearCartByUserID(int userID) {
+        String sql = "DELETE FROM Cart WHERE UserID = ?";
+        try {
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setInt(1, userID);
+            ps.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
