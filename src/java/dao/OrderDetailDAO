@@ -1,0 +1,49 @@
+package dal;
+
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.List;
+import model.OrderDetail;
+
+public class OrderDetailDAO extends DBContext {
+
+    // Thêm một dòng chi tiết đơn hàng
+    public void addOrderDetail(int orderID, int productID, int quantity, double unitPrice) {
+        String sql = "INSERT INTO OrderDetails (OrderID, ProductID, Quantity, UnitPrice) VALUES (?, ?, ?, ?)";
+        try {
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setInt(1, orderID);
+            ps.setInt(2, productID);
+            ps.setInt(3, quantity);
+            ps.setDouble(4, unitPrice);
+            ps.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    // Lấy danh sách chi tiết theo OrderID
+    public List<OrderDetail> getOrderDetailsByOrderID(int orderID) {
+        List<OrderDetail> list = new ArrayList<>();
+        String sql = "SELECT * FROM OrderDetails WHERE OrderID = ?";
+        try {
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setInt(1, orderID);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                OrderDetail od = new OrderDetail(
+                    rs.getInt("OrderDetailID"),
+                    rs.getInt("OrderID"),
+                    rs.getInt("ProductID"),
+                    rs.getInt("Quantity"),
+                    rs.getDouble("UnitPrice")
+                );
+                list.add(od);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+}
