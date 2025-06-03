@@ -21,10 +21,7 @@ import java.time.format.DateTimeFormatter;
 import service.BanAccountService;
 import utils.SendMail;
 
-/**
- *
- * @author duchi
- */
+
 @WebServlet(name = "BanAccount", urlPatterns = {"/ban"})
 public class BanAccount extends HttpServlet {
 
