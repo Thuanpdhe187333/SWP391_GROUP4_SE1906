@@ -70,7 +70,7 @@ public class ProductDAO extends DBContext{
     
     public void editProduct(int productID, String productName, String description, double price,
                         int quantity, String image, int categoryID, Integer labelID, int brandID) {
-        String sql = "UPDATE Products SET " +
+        String sql = "UPDATE products SET " +
                      "ProductName = ?, Description = ?, Price = ?, Quantity = ?, Image = ?, CategoryID = ?, LabelID = ?, BrandID = ? " +
                      "WHERE ProductID = ?";
         try {
@@ -80,7 +80,7 @@ public class ProductDAO extends DBContext{
             ps.setDouble(3, price);
             ps.setInt(4, quantity);
             ps.setString(5, image);          
-
+            ps.setInt(6, categoryID);
             if (labelID != null && labelID != 0) {
                 ps.setInt(7, labelID);
             } else {
@@ -192,6 +192,65 @@ public class ProductDAO extends DBContext{
 
         return products;
     }
+
+    public Product getNewProDuct(){
+        String sql = "select top 1 * from products\n"
+                + "order by productID desc";
+        try {
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+            while(rs.next()){
+                Integer labelID = rs.getObject("LabelID") != null ? rs.getInt("LabelID") : null;
+                return new Product(
+                    rs.getInt("ProductID"),             
+                    rs.getString("ProductName"),        
+                    rs.getString("Description"),        
+                    rs.getDouble("Price"),              
+                    rs.getInt("Quantity"),             
+                    rs.getString("Image"),             
+                    rs.getInt("CategoryID"),            
+                    labelID,
+                    rs.getInt("BrandID"),
+                    rs.getTimestamp("CreatedAt")        
+                );
+            }
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+        return null;
+    }
+    
+    public List<Product> getLatestProducts(int limit) {
+        List<Product> list = new ArrayList<>();
+        String sql = "SELECT * FROM products ORDER BY ProductID DESC LIMIT ?"; 
+        try {
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setInt(1, limit);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Integer labelID = rs.getObject("LabelID") != null ? rs.getInt("LabelID") : null;
+                list.add(new Product(
+                    rs.getInt("ProductID"),
+                    rs.getString("ProductName"),
+                    rs.getString("Description"),
+                    rs.getDouble("Price"),
+                    rs.getInt("Quantity"),
+                    rs.getString("Image"),
+                    rs.getInt("CategoryID"),
+                    labelID,
+                    rs.getInt("BrandID"),
+                    rs.getTimestamp("CreatedAt")
+                ));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+    
+    
+ 
+
 
 
     
