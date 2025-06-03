@@ -1,0 +1,128 @@
+package dal;
+
+import model.User;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+
+public class UserDAO extends DBContext {
+
+    // Đăng nhập: kiểm tra username và password
+    public User checkLogin(String username, String passwordHash) {
+        String sql = "SELECT * FROM Users WHERE Username = ? AND PasswordHash = ?";
+        try (PreparedStatement st = connection.prepareStatement(sql)) {
+            st.setString(1, username);
+            st.setString(2, passwordHash);
+            ResultSet rs = st.executeQuery();
+            if (rs.next()) {
+                return mapUser(rs);
+            }
+        } catch (SQLException e) {
+            System.out.println("Error in checkLogin: " + e.getMessage());
+        }
+        return null;
+    }
+
+    // Lấy toàn bộ user
+    public List<User> getAllUsers() {
+        List<User> list = new ArrayList<>();
+        String sql = "SELECT * FROM Users";
+        try (PreparedStatement st = connection.prepareStatement(sql)) {
+            ResultSet rs = st.executeQuery();
+            while (rs.next()) {
+                list.add(mapUser(rs));
+            }
+        } catch (SQLException e) {
+            System.out.println("Error in getAllUsers: " + e.getMessage());
+        }
+        return list;
+    }
+
+    // Lấy user theo ID
+    public User getUserById(int id) {
+        String sql = "SELECT * FROM Users WHERE UserID = ?";
+        try (PreparedStatement st = connection.prepareStatement(sql)) {
+            st.setInt(1, id);
+            ResultSet rs = st.executeQuery();
+            if (rs.next()) {
+                return mapUser(rs);
+            }
+        } catch (SQLException e) {
+            System.out.println("Error in getUserById: " + e.getMessage());
+        }
+        return null;
+    }
+
+    // Thêm user mới
+    public boolean addUser(User user) {
+        String sql = "INSERT INTO Users (Username, PasswordHash, FullName, Email, Role, CreatedAt) "
+                   + "VALUES (?, ?, ?, ?, ?, ?)";
+        try (PreparedStatement st = connection.prepareStatement(sql)) {
+            st.setString(1, user.getUsername());
+            st.setString(2, user.getPasswordHash());
+            st.setString(3, user.getFullName());
+            st.setString(4, user.getEmail());
+            st.setString(5, user.getRole());
+            st.setTimestamp(6, new Timestamp(user.getCreatedAt().getTime()));
+            return st.executeUpdate() > 0;
+        } catch (SQLException e) {
+            System.out.println("Error in addUser: " + e.getMessage());
+        }
+        return false;
+    }
+
+    // Cập nhật user
+    public boolean updateUser(User user) {
+        String sql = "UPDATE Users SET Username = ?, PasswordHash = ?, FullName = ?, Email = ?, Role = ? WHERE UserID = ?";
+        try (PreparedStatement st = connection.prepareStatement(sql)) {
+            st.setString(1, user.getUsername());
+            st.setString(2, user.getPasswordHash());
+            st.setString(3, user.getFullName());
+            st.setString(4, user.getEmail());
+            st.setString(5, user.getRole());
+            st.setInt(6, user.getUserId());
+            return st.executeUpdate() > 0;
+        } catch (SQLException e) {
+            System.out.println("Error in updateUser: " + e.getMessage());
+        }
+        return false;
+    }
+
+    // Xóa user
+    public boolean deleteUser(int userId) {
+        String sql = "DELETE FROM Users WHERE UserID = ?";
+        try (PreparedStatement st = connection.prepareStatement(sql)) {
+            st.setInt(1, userId);
+            return st.executeUpdate() > 0;
+        } catch (SQLException e) {
+            System.out.println("Error in deleteUser: " + e.getMessage());
+        }
+        return false;
+    }
+
+    // Kiểm tra username tồn tại
+    public boolean checkUsernameExist(String username) {
+        String sql = "SELECT COUNT(*) FROM Users WHERE Username = ?";
+        try (PreparedStatement st = connection.prepareStatement(sql)) {
+            st.setString(1, username);
+            ResultSet rs = st.executeQuery();
+            if (rs.next()) return rs.getInt(1) > 0;
+        } catch (SQLException e) {
+            System.out.println("Error in checkUsernameExist: " + e.getMessage());
+        }
+        return false;
+    }
+
+    // Helper: chuyển từ ResultSet sang User
+    private User mapUser(ResultSet rs) throws SQLException {
+        return new User(
+                rs.getInt("UserID"),
+                rs.getString("Username"),
+                rs.getString("PasswordHash"),
+                rs.getString("FullName"),
+                rs.getString("Email"),
+                rs.getString("Role"),
+                rs.getTimestamp("CreatedAt")
+        );
+    }
+}
