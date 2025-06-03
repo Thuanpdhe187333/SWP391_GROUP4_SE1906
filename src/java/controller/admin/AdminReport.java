@@ -17,10 +17,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.sql.ResultSet;
 
-/**
- *
- * @author LE HAI THINH
- */
+
 @WebServlet(name = "AdminReport", urlPatterns = {"/AdminReport"})
 public class AdminReport extends HttpServlet {
 
