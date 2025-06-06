@@ -16,7 +16,24 @@ import model.Category;
  * @author daidu
  */
 public class CategoryDAO extends DBContext{
-    
+    public List<Category> getAllCategories(){
+        List<Category> list = new ArrayList<>();
+        String sql = "Select * from categories";
+        try {
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+            while(rs.next()){
+                Integer parentID = rs.getObject("ParentID") != null ? rs.getInt("ParentID") : null;
+                list.add(new Category(
+                rs.getInt("CategoryID"),
+                rs.getString("CategoryName"),
+                parentID));
+            }
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+        return list;
+    }
     
     
     public Category getCategoryByID(int categoryID){
