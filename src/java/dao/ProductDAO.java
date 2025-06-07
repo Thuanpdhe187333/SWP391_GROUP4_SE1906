@@ -248,13 +248,102 @@ public class ProductDAO extends DBContext{
         return list;
     }
     
-    
- 
+    public List<Product> getProductsByBrand(int brandId) {
+        List<Product> list = new ArrayList<>();
+        String sql = "SELECT * FROM products WHERE BrandID = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, brandId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                list.add(new Product(
+                    rs.getInt("ProductID"),
+                    rs.getString("ProductName"),
+                    rs.getString("Description"),
+                    rs.getDouble("Price"),
+                    rs.getInt("Quantity"),
+                    rs.getString("Image"),
+                    rs.getInt("CategoryID"),
+                    rs.getObject("LabelID") != null ? rs.getInt("LabelID") : null,
+                    rs.getInt("BrandID"),
+                    rs.getTimestamp("CreatedAt")
+                ));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
 
-
-
+    public List<Product> searchProductsByName(String keyword) {
+        List<Product> list = new ArrayList<>();
+        String sql = "SELECT * FROM products WHERE ProductName LIKE ?";
+        try {
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setString(1, "%" + keyword + "%");
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                list.add(new Product(
+                    rs.getInt(1),
+                    rs.getString(2),
+                    rs.getString(3),
+                    rs.getDouble(4),
+                    rs.getInt(5),
+                    rs.getString(6),
+                    rs.getInt(7),
+                    rs.getObject(8) != null ? rs.getInt(8) : null,
+                    rs.getInt(9),
+                    rs.getTimestamp(10)
+                ));
+            }
+        } catch (Exception e) {
+            System.out.println("Search error: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return list;
+    }
     
+    public List<Product> getProductsByPage(int offset, int limit) {
+        List<Product> list = new ArrayList<>();
+        String sql = "SELECT * FROM products ORDER BY CreatedAt DESC OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+        try {
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setInt(1, offset);
+            ps.setInt(2, limit);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                list.add(new Product(
+                    rs.getInt(1),
+                    rs.getString(2),
+                    rs.getString(3),
+                    rs.getDouble(4),
+                    rs.getInt(5),
+                    rs.getString(6),
+                    rs.getInt(7),
+                    rs.getObject(8) != null ? rs.getInt(8) : null,
+                    rs.getInt(9),
+                    rs.getTimestamp(10)
+                ));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
     
+    public int getTotalProductCount() {
+        String sql = "SELECT COUNT(*) FROM products";
+        try {
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
 
 
 }
