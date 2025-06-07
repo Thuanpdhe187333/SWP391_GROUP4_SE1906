@@ -2,62 +2,65 @@ package controller;
 
 import dao.CategoryDAO;
 import java.io.IOException;
+import java.util.List;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.util.List;
 import model.Category;
 
 public class ViewCategoryServlet extends HttpServlet {
-    
+
     private static final int PAGE_SIZE = 5;
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-        CategoryDAO dao = new CategoryDAO();
-        
         String keyword = request.getParameter("keyword");
-        String parentFilter = request.getParameter("parentId");
-        String sortField = request.getParameter("sortField");
-        String sortOrder = request.getParameter("sortOrder");
-        String pageStr = request.getParameter("page");
-        
-        int page = 1;
-        if (pageStr != null) {
+        String parentIDParam = request.getParameter("parentID");
+        Integer parentID = null;
+        if (parentIDParam != null && !parentIDParam.isEmpty()) {
             try {
-                page = Integer.parseInt(pageStr);
-                if (page < 1) page = 1;
+                parentID = Integer.parseInt(parentIDParam);
+            } catch (NumberFormatException e) {
+                parentID = null;
+            }
+        }
+        String sortField = request.getParameter("sortField");
+        if (sortField == null || sortField.isEmpty()) {
+            sortField = "CategoryID";
+        }
+        String sortOrder = request.getParameter("sortOrder");
+        if (sortOrder == null || sortOrder.isEmpty()) {
+            sortOrder = "asc";
+        }
+        int page = 1;
+        String pageParam = request.getParameter("page");
+        if (pageParam != null) {
+            try {
+                page = Integer.parseInt(pageParam);
             } catch (NumberFormatException e) {
                 page = 1;
             }
         }
-        
-        Integer parentIdFilter = null;
-        if (parentFilter != null && !parentFilter.isEmpty()) {
-            try {
-                parentIdFilter = Integer.parseInt(parentFilter);
-            } catch (NumberFormatException e) {
-                parentIdFilter = null;
-            }
-        }
 
-        List<Category> parentCategories = dao.getParentCategories();
-        List<Category> categories = dao.searchCategories(keyword, parentIdFilter, sortField, sortOrder, page, PAGE_SIZE);
-        
-        int totalCategories = dao.countTotalCategories(keyword, parentIdFilter);
-        int totalPages = (int) Math.ceil((double) totalCategories / PAGE_SIZE);
-        
-        request.setAttribute("categories", categories);
-        request.setAttribute("parentCategories", parentCategories);
+        CategoryDAO dao = new CategoryDAO();
+        int total = dao.countFiltered(keyword, parentID);
+        int totalPages = (int) Math.ceil((double) total / PAGE_SIZE);
+        int offset = (page - 1) * PAGE_SIZE;
+
+        List<Category> list = dao.getFilteredCategories(keyword, parentID, sortField, sortOrder, offset, PAGE_SIZE);
+        List<Category> parentList = dao.getParentCategories();
+
+        request.setAttribute("categoryList", list);
+        request.setAttribute("parentList", parentList);
         request.setAttribute("keyword", keyword);
-        request.setAttribute("parentIdFilter", parentIdFilter);
+        request.setAttribute("parentID", parentID);
         request.setAttribute("sortField", sortField);
         request.setAttribute("sortOrder", sortOrder);
-        request.setAttribute("currentPage", page);
+        request.setAttribute("page", page);
         request.setAttribute("totalPages", totalPages);
-        
-        request.getRequestDispatcher("category.jsp").forward(request, response);
+
+        request.getRequestDispatcher("view_category.jsp").forward(request, response);
     }
 }
