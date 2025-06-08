@@ -1,0 +1,61 @@
+package controller;
+
+import dal.CategoryDAO;
+import java.io.IOException;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import model.User;
+
+@WebServlet(name = "AdminCategoryDeleteServlet", urlPatterns = {"/admin-category-delete"})
+public class AdminCategoryDeleteServlet extends HttpServlet {
+
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        response.setContentType("text/html;charset=UTF-8");
+
+        try {
+            HttpSession session = request.getSession();
+            User user = (User) session.getAttribute("user");
+
+            // Kiểm tra đăng nhập và quyền admin
+            if (user == null || user.getUserId()!= 1) {
+                response.sendRedirect("login");
+                return;
+            }
+
+            // Lấy ID danh mục từ query string
+            int categoryId = Integer.parseInt(request.getParameter("id"));
+
+            // DAO xử lý
+            CategoryDAO categoryDAO = new CategoryDAO();
+
+            // Kiểm tra nếu có sản phẩm thì không được xóa
+            if (categoryDAO.hasProducts(categoryId)) {
+                // Chuyển thông báo qua session để hiển thị sau redirect
+                session.setAttribute("errorMessage", "Không thể xóa danh mục đang có sản phẩm. Hãy xóa sản phẩm trước.");
+                response.sendRedirect("admin-categories");
+                return;
+            }
+
+            // Xóa danh mục
+            boolean success = categoryDAO.deleteCategory(categoryId);
+            if (success) {
+                session.setAttribute("successMessage", "Xóa danh mục thành công.");
+            } else {
+                session.setAttribute("errorMessage", "Xóa thất bại. Vui lòng thử lại.");
+            }
+
+            response.sendRedirect("admin-categories");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            request.setAttribute("errorMessage", "Có lỗi xảy ra trong quá trình xử lý.");
+            request.getRequestDispatcher("admin-categories").forward(request, response);
+        }
+    }
+}
