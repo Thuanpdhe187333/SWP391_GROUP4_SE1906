@@ -1,0 +1,65 @@
+package controller;
+
+import dal.CategoryDAO;
+import model.Category;
+import model.User;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.*;
+
+import java.io.IOException;
+
+@WebServlet(name = "AdminCategoryAddServlet", urlPatterns = {"/admin-category-add"})
+public class AdminCategoryAddServlet extends HttpServlet {
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        response.setContentType("text/html;charset=UTF-8");
+
+        try {
+            HttpSession session = request.getSession();
+            User user = (User) session.getAttribute("user");
+
+            // Kiểm tra đăng nhập và quyền admin
+            if (user == null || user.getUserId()!= 1) {
+                response.sendRedirect("login");
+                return;
+            }
+
+            // Lấy thông tin từ form
+            String categoryName = request.getParameter("categoryName");
+            String parentIdRaw = request.getParameter("parentId");
+
+            Integer parentId = null;
+            if (parentIdRaw != null && !parentIdRaw.isEmpty()) {
+                parentId = Integer.parseInt(parentIdRaw);
+            }
+
+            // Tạo đối tượng Category mới
+            Category category = new Category();
+            category.setCategoryName(categoryName);
+            category.setParentId(parentId);
+
+            // Lưu vào database
+            CategoryDAO categoryDAO = new CategoryDAO();
+            boolean success = categoryDAO.addCategory(category);
+
+            // ✅ Dùng session để lưu thông báo sau khi redirect
+            if (success) {
+                session.setAttribute("successMessage", "Thêm danh mục thành công!");
+            } else {
+                session.setAttribute("errorMessage", "Thêm danh mục thất bại. Vui lòng thử lại.");
+            }
+
+            response.sendRedirect("admin-categories");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            request.setAttribute("errorMessage", "Đã xảy ra lỗi. Vui lòng thử lại.");
+            request.getRequestDispatcher("admin-categories.jsp").forward(request, response);
+        }
+    }
+}
