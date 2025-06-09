@@ -19,7 +19,6 @@
             justify-content: center;
         }
 
-        /* Thanh tìm kiếm */
         .search-bar {
             flex: 1;
             display: flex;
