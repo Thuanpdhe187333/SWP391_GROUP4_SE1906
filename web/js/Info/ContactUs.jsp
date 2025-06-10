@@ -1,3 +1,6 @@
+
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,7 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="">
-    <title>Contact | E-Shopper</title>
+    <title>Contact | C-Shopper</title>
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <link href="css/font-awesome.min.css" rel="stylesheet">
     <link href="css/prettyPhoto.css" rel="stylesheet">
@@ -32,19 +35,19 @@
 					<div class="col-sm-6">
 						<div class="contactinfo">
 							<ul class="nav nav-pills">
-								<li><a href=""><i class="fa fa-phone"></i> +2 95 01 88 821</a></li>
-								<li><a href=""><i class="fa fa-envelope"></i> info@domain.com</a></li>
+								<li><a href="#"><i class="fa fa-phone"></i> +2 95 01 88 821</a></li>
+								<li><a href="#"><i class="fa fa-envelope"></i> info@domain.com</a></li>
 							</ul>
 						</div>
 					</div>
 					<div class="col-sm-6">
 						<div class="social-icons pull-right">
 							<ul class="nav navbar-nav">
-								<li><a href=""><i class="fa fa-facebook"></i></a></li>
-								<li><a href=""><i class="fa fa-twitter"></i></a></li>
-								<li><a href=""><i class="fa fa-linkedin"></i></a></li>
-								<li><a href=""><i class="fa fa-dribbble"></i></a></li>
-								<li><a href=""><i class="fa fa-google-plus"></i></a></li>
+								<li><a href="#"><i class="fa fa-facebook"></i></a></li>
+								<li><a href="#"><i class="fa fa-twitter"></i></a></li>
+								<li><a href="#"><i class="fa fa-linkedin"></i></a></li>
+								<li><a href="#"><i class="fa fa-dribbble"></i></a></li>
+								<li><a href="#"><i class="fa fa-google-plus"></i></a></li>
 							</ul>
 						</div>
 					</div>
@@ -59,34 +62,13 @@
 						<div class="logo pull-left">
 							<a href="index.html"><img src="images/home/logo.png" alt="" /></a>
 						</div>
-						<div class="btn-group pull-right">
-							<div class="btn-group">
-								<button type="button" class="btn btn-default dropdown-toggle usa" data-toggle="dropdown">
-									USA
-									<span class="caret"></span>
-								</button>
-								<ul class="dropdown-menu">
-									<li><a href="">Canada</a></li>
-									<li><a href="">UK</a></li>
-								</ul>
-							</div>
-							
-							<div class="btn-group">
-								<button type="button" class="btn btn-default dropdown-toggle usa" data-toggle="dropdown">
-									DOLLAR
-									<span class="caret"></span>
-								</button>
-								<ul class="dropdown-menu">
-									<li><a href="">Canadian Dollar</a></li>
-									<li><a href="">Pound</a></li>
-								</ul>
-							</div>
-						</div>
+						
 					</div>
 					<div class="col-sm-8">
 						<div class="shop-menu pull-right">
 							<ul class="nav navbar-nav">
-								<li><a href=""><i class="fa fa-user"></i> Account</a></li>
+								<li><a href="#"><i class="fa fa-user"></i> Account</a></li>
+								
 								
 								<li><a href="login.html"><i class="fa fa-lock"></i> Login</a></li>
 							</ul>
@@ -110,18 +92,68 @@
 						</div>
 						<div class="mainmenu pull-left">
 							<ul class="nav navbar-nav collapse navbar-collapse">
-								<li><a href="index.html">Home</a></li>
+								<li><a href="index.jsp" class="active">Home</a></li>
 								<li class="dropdown"><a href="#">Shop<i class="fa fa-angle-down"></i></a>
-                                    <ul role="menu" class="sub-menu">
+                                                        <ul role="menu" class="sub-menu">
                                         <li><a href="shop.html">Products</a></li>
-										<li><a href="product-details.html">Product Details</a></li> 
+	                                <li><a href="product-details.html">Product Details</a></li> 
 										
-										<li><a href="login.html">Login</a></li> 
+                                                                                
                                     </ul>
-                                </li> 
+                                                                    
+                                    
 								
-								
-								<li><a href="contact-us.html" class="active">Contact</a></li>
+							
+								<li><a href="contact-us.jsp">Contact</a></li>
+                                                                
+                                                                
+                                                                <li class="dropdown"><a href="#">Chăm sóc da mặt<i class="fa fa-angle-down"></i></a>
+                                    <ul role="menu" class="sub-menu">
+                                        <li><a href="shop">Bông tẩy trang</a></li>
+					<li><a href="product-details.html">Nước tẩy trang</a></li> 
+					<li><a href="login.html">Sữa rửa mặt</a></li> 
+                                        <li><a href="login.html">Toner</a></li>
+                                        <li><a href="login.html">Serum</a></li>
+                                        <li><a href="login.html">Kem dưỡng</a></li>
+                                        <li><a href="login.html">Mặt nạ</a></li>
+                                        <li><a href="login.html">Son dưỡng</a></li>
+                                        <li><a href="login.html">Kem trị mụn</a></li>
+                                        <li><a href="login.html">Kem chống nắng</a></li>
+                                    </ul>     
+                                    </li> 
+                                    
+                                    
+                                    <li class="dropdown"><a href="#">Make-up<i class="fa fa-angle-down"></i></a>
+                                    <ul role="menu" class="sub-menu">
+                                        <li><a href="shop.html">Kem nền</a></li>
+					<li><a href="product-details.html">Kem che khuyết điểm</a></li> 
+					<li><a href="login.html">Phấn phủ</a></li>
+                                        <li><a href="login.html">Phấn mắt</a></li>
+                                        <li><a href="login.html">Phấn má</a></li>
+                                        <li><a href="login.html">Cushion</a></li>
+                                        <li><a href="login.html">Son</a></li>
+                                        <li><a href="login.html">Chì kẻ mày</a></li>
+                                        <li><a href="login.html">Mascara</a></li>
+                                        <li><a href="login.html">Eyeliner</a></li>
+                                    </ul>     
+                                    </li> 
+                                    
+                                    <li class="dropdown"><a href="#">Chăm sóc cơ thể<i class="fa fa-angle-down"></i></a>
+                                    <ul role="menu" class="sub-menu">
+                                        <li><a href="shop.html">Sữa tắm</a></li>
+					<li><a href="product-details.html">Tẩy tế bào chết</a></li> 
+					<li><a href="login.html">Dưỡng thể</a></li> 
+                                        <li><a href="login.html">Tẩy lông</a></li>
+                                        <li><a href="login.html">Khử mùi cơ thể</a></li>
+                                        <li><a href="login.html">Kem dưỡng tay</a></li>
+                                        <li><a href="login.html">Body Mist</a></li>
+                                        <li><a href="login.html">Nước hoa</a></li>
+                                        <li><a href="login.html">Dầu gội, dầu xả</a></li>
+                                        <li><a href="login.html">Dưỡng tóc</a></li>
+                                    </ul>     
+                                    </li> 
+                                    
+                                        
 							</ul>
 						</div>
 					</div>
@@ -136,24 +168,17 @@
 	</header><!--/header-->
         
         
-        
-        
-	 
-	 <div id="contact-page" class="container">
+        <section id="slider"><!--slider-->
+		<div class="container">
+			<div id="contact-page" class="container">
     	<div class="bg">
 	    	<div class="row">    		
 	    		<div class="col-sm-12">    			   			
-					<h2 class="title text-center">Contact <strong>Us</strong></h2>    			    				    				
-					<div id="gmap" class="contact-map">
-                                         
-</div>
-					</div>
-				</div>			 		
-			</div>    	
-    		<div class="row">  	
+					<h2 class="title text-center">Contact <strong>Us</strong></h2>
+                                         <div class="row">  	
 	    		<div class="col-sm-8">
 	    			<div class="contact-form">
-	    				<h2 class="title text-center">Contact with us</h2>
+	    				
 	    				<div class="status alert alert-success" style="display: none"></div>
 				    	<form id="main-contact-form" class="contact-form row" name="contact-form" method="post">
 				            <div class="form-group col-md-6">
@@ -178,12 +203,12 @@
 	    			<div class="contact-info">
 	    				<h2 class="title text-center">Contact Info</h2>
 	    				<address>
-	    					<p>Cosmetic Shop.</p>
-							<p>003 HaNoi, VietNam</p>
-							<p>VietNam</p>
+	    					<p>C-Shopper Inc.</p>
+							<p>HoaLac, Hanoi, VN</p>
+							<p>Vietnam</p>
 							<p>Mobile: +2346 17 38 93</p>
 							<p>Fax: 1-714-252-0026</p>
-							<p>Email: info@cosmetic-shopper.com</p>
+							<p>Email: info@c-shopper.com</p>
 	    				</address>
 	    				<div class="social-networks">
 	    					<h2 class="title text-center">Social Networking</h2>
@@ -204,9 +229,22 @@
 	    				</div>
 	    			</div>
     			</div>    			
-	    	</div>  
+	    	</div>                                        
+					<div id="gmap" class="contact-map">
+					</div>
+				</div>			 		
+			</div>    	
+    		  
     	</div>	
     </div><!--/#contact-page-->
+		</div>
+	</section><!--/slider-->
+        
+        
+        
+
+	 
+	 
 	
 	<footer id="footer"><!--Footer-->
 		<div class="footer-top">
@@ -300,7 +338,7 @@
 								<li><a href="">Contact Us</a></li>
 								<li><a href="">Order Status</a></li>
 								<li><a href="">Change Location</a></li>
-								<li><a href="">FAQ’s</a></li>
+								<li><a href="">FAQ?s</a></li>
 							</ul>
 						</div>
 					</div>
