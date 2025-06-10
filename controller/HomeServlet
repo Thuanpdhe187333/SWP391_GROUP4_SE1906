@@ -65,7 +65,6 @@ public class HomeServlet extends HttpServlet {
         List<Product> list = dao.getAllProduct();
         request.setAttribute("productList", list);
         
-        
         CategoryDAO categoryDao = new CategoryDAO();
         List<Category> parents = categoryDao.getParentCategories();
         for (Category parent : parents) {
