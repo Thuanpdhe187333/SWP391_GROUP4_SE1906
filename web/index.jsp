@@ -1,8 +1,3 @@
-<%-- 
-    Document   : index
-    Created on : May 23, 2025, 4:27:56 PM
-    Author     : daidu
---%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 
@@ -15,7 +10,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="">
-    <title>Home | E-Shopper</title>
+    <title>Home | C-Shopper</title>
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <link href="css/font-awesome.min.css" rel="stylesheet">
     <link href="css/prettyPhoto.css" rel="stylesheet">
@@ -35,6 +30,10 @@
 </head><!--/head-->
 
 <body>
+       
+    
+    
+    
 	<header id="header"><!--header-->
 		<div class="header_top"><!--header_top-->
 			<div class="container">
@@ -67,40 +66,17 @@
 				<div class="row">
 					<div class="col-sm-4">
 						<div class="logo pull-left">
-							<a href="index.html"><img src="images/home/LogoCosmetic.png" alt="" /></a>
+							<a href="home"><img src="images/home/logo.png" alt="" /></a>
 						</div>
-						<div class="btn-group pull-right">
-							<div class="btn-group">
-								<button type="button" class="btn btn-default dropdown-toggle usa" data-toggle="dropdown">
-									USA
-									<span class="caret"></span>
-								</button>
-								<ul class="dropdown-menu">
-									<li><a href="#">Canada</a></li>
-									<li><a href="#">UK</a></li>
-								</ul>
-							</div>
-							
-							<div class="btn-group">
-								<button type="button" class="btn btn-default dropdown-toggle usa" data-toggle="dropdown">
-									DOLLAR
-									<span class="caret"></span>
-								</button>
-								<ul class="dropdown-menu">
-									<li><a href="#">Canadian Dollar</a></li>
-									<li><a href="#">Pound</a></li>
-								</ul>
-							</div>
-						</div>
+						
 					</div>
 					<div class="col-sm-8">
 						<div class="shop-menu pull-right">
 							<ul class="nav navbar-nav">
 								<li><a href="#"><i class="fa fa-user"></i> Account</a></li>
-								<li><a href="#"><i class="fa fa-star"></i> Wishlist</a></li>
-								<li><a href="checkout.html"><i class="fa fa-crosshairs"></i> Checkout</a></li>
-								<li><a href="cart.html"><i class="fa fa-shopping-cart"></i> Cart</a></li>
-								<li><a href="login.html"><i class="fa fa-lock"></i> Login</a></li>
+								
+								
+								<li><a href="login.jsp"><i class="fa fa-lock"></i> Login</a></li>
 							</ul>
 						</div>
 					</div>
@@ -122,32 +98,76 @@
 						</div>
 						<div class="mainmenu pull-left">
 							<ul class="nav navbar-nav collapse navbar-collapse">
-								<li><a href="index.html" class="active">Home</a></li>
+								<li><a href="home" class="active">Home</a></li>
 								<li class="dropdown"><a href="#">Shop<i class="fa fa-angle-down"></i></a>
                                     <ul role="menu" class="sub-menu">
-                                        <li><a href="shop.html">Products</a></li>
-										<li><a href="product-details.html">Product Details</a></li> 
-										<li><a href="checkout.html">Checkout</a></li> 
-										<li><a href="cart.html">Cart</a></li> 
-										<li><a href="login.html">Login</a></li> 
+                                        
+                                        <li><a href="product-list">Products</a></li>
+	                                <li><a href="product-details.jsp">Product Details</a></li> 
+										
+                                                                                
                                     </ul>
-                                </li> 
-								<li class="dropdown"><a href="#">Blog<i class="fa fa-angle-down"></i></a>
+                                                                    
+                                    
+								
+							
+								<li><a href="contact-us.jsp">Contact</a></li>
+                                                                
+                                                                
+                                                                <li class="dropdown"><a href="#">Chăm sóc da mặt<i class="fa fa-angle-down"></i></a>
                                     <ul role="menu" class="sub-menu">
-                                        <li><a href="blog.html">Blog List</a></li>
-										<li><a href="blog-single.html">Blog Single</a></li>
-                                    </ul>
-                                </li> 
-								<li><a href="404.html">404</a></li>
-								<li><a href="contact-us.html">Contact</a></li>
+                                        <li><a href="shop.jsp">Bông tẩy trang</a></li>
+					<li><a href="shop.jsp">Nước tẩy trang</a></li> 
+					<li><a href="shop.jsp">Sữa rửa mặt</a></li> 
+                                        <li><a href="shop.jsp">Toner</a></li>
+                                        <li><a href="shop.jsp">Serum</a></li>
+                                        <li><a href="shop.jsp">Kem dưỡng</a></li>
+                                        <li><a href="shop.jsp">Mặt nạ</a></li>
+                                        <li><a href="shop.jsp">Son dưỡng</a></li>
+                                        <li><a href="shop.jsp">Kem trị mụn</a></li>
+                                        <li><a href="shop.jsp">Kem chống nắng</a></li>
+                                    </ul>     
+                                    </li> 
+                                    
+                                    
+                                    <li class="dropdown"><a href="#">Make-up<i class="fa fa-angle-down"></i></a>
+                                    <ul role="menu" class="sub-menu">
+                                        <li><a href="product-list.jsp">Kem nền</a></li>
+					<li><a href="product-list.jsp">Kem che khuyết điểm</a></li> 
+
+                                        <li><a href="product-list.jsp">Phấn mắt</a></li>
+                                        <li><a href="product-list.jsp">Phấn phủ</a></li>
+                                        <li><a href="product-list.jsp">Phấn má</a></li>
+                                        <li><a href="product-list.jsp">Cushion</a></li>
+                                        <li><a href="product-list.jsp">Son</a></li>
+                                        <li><a href="product-list.jspp">Chì kẻ mày</a></li>
+                                        <li><a href="product-list.jsp">Mascara</a></li>
+                                        <li><a href="product-list.jsp">Eyeliner</a></li>
+                                    </ul>     
+                                    </li> 
+                                    
+                                    <li class="dropdown"><a href="#">Chăm sóc cơ thể<i class="fa fa-angle-down"></i></a>
+                                    <ul role="menu" class="sub-menu">
+                                        <li><a href="product-list.jsp">Sữa tắm</a></li>
+					<li><a href="product-list.jsp">Tẩy tế bào chết</a></li> 
+					<li><a href="product-list.jsp">Dưỡng thể</a></li> 
+                                        <li><a href="product-list.jsp">Tẩy lông</a></li>
+                                        <li><a href="product-list.jsp">Khử mùi cơ thể</a></li>
+                                        <li><a href="product-list.jsp">Kem dưỡng tay</a></li>
+                                        <li><a href="product-list.jsp">Body Mist</a></li>
+                                        <li><a href="product-list.jsp">Nước hoa</a></li>
+                                        <li><a href="product-list.jsp">Dầu gội, dầu xả</a></li>
+                                        <li><a href="product-list.jsp">Dưỡng tóc</a></li>
+                                    </ul>     
+                                    </li> 
+                                    
+                                        
 							</ul>
 						</div>
 					</div>
 					<div class="col-sm-3">
 						<div class="search_box pull-right">
-							<form action="shop" method="get">
-                                                            <input type="text" name="search" placeholder="Search" />
-                                                        </form>
+							<input type="text" placeholder="Search"/>
 						</div>
 					</div>
 				</div>
@@ -169,39 +189,40 @@
 						<div class="carousel-inner">
 							<div class="item active">
 								<div class="col-sm-6">
-									<h1><span>E</span>-SHOPPER</h1>
+									<h1><span>Cosmetic</span>Shop</h1>
 									<h2>Free E-Commerce Template</h2>
 									<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. </p>
 									<button type="button" class="btn btn-default get">Get it now</button>
 								</div>
 								<div class="col-sm-6">
-									<img src="images/home/girl1.jpg" class="girl img-responsive" alt="" />
-									<img src="images/home/pricing.png"  class="pricing" alt="" />
-								</div>
+									<img src="images/home/mypham1.jpg" class="girl img-responsive" alt="" />
+									
+								</div>'
+                                                                
 							</div>
 							<div class="item">
 								<div class="col-sm-6">
-									<h1><span>E</span>-SHOPPER</h1>
+									<h1><span>Cosmetic</span>Shop</h1>
 									<h2>100% Responsive Design</h2>
 									<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. </p>
 									<button type="button" class="btn btn-default get">Get it now</button>
 								</div>
 								<div class="col-sm-6">
-									<img src="images/home/girl2.jpg" class="girl img-responsive" alt="" />
-									<img src="images/home/pricing.png"  class="pricing" alt="" />
+									<img src="images/home/mypham2.jpg" class="girl img-responsive" alt="" />
+									
 								</div>
 							</div>
 							
 							<div class="item">
 								<div class="col-sm-6">
-									<h1><span>E</span>-SHOPPER</h1>
+									<h1><span>Cosmetic</span>Shop</h1>
 									<h2>Free Ecommerce Template</h2>
 									<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. </p>
 									<button type="button" class="btn btn-default get">Get it now</button>
 								</div>
 								<div class="col-sm-6">
-									<img src="images/home/girl3.jpg" class="girl img-responsive" alt="" />
-									<img src="images/home/pricing.png" class="pricing" alt="" />
+									<img src="images/home/mypham3.jpg" class="girl img-responsive" alt="" />
+									
 								</div>
 							</div>
 							
@@ -476,7 +497,7 @@
 				<div class="row">
 					<div class="col-sm-2">
 						<div class="companyinfo">
-							<h2><span>e</span>-shopper</h2>
+							<h2><span>c</span>-shopper</h2>
 							<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit,sed do eiusmod tempor</p>
 						</div>
 					</div>
@@ -544,7 +565,7 @@
 					<div class="col-sm-3">
 						<div class="address">
 							<img src="images/home/map.png" alt="" />
-							<p>505 S Atlantic Ave Virginia Beach, VA(Virginia)</p>
+							<p>Hoalac, Hanoi, Vietnam</p>
 						</div>
 					</div>
 				</div>
@@ -568,13 +589,13 @@
 					</div>
 					<div class="col-sm-2">
 						<div class="single-widget">
-							<h2>Quock Shop</h2>
+							<h2>Cosmetic Shop</h2>
 							<ul class="nav nav-pills nav-stacked">
-								<li><a href="#">T-Shirt</a></li>
-								<li><a href="#">Mens</a></li>
+								<li><a href="#">Makeup</a></li>
+								<li><a href="#">Body</a></li>
 								<li><a href="#">Womens</a></li>
 								<li><a href="#">Gift Cards</a></li>
-								<li><a href="#">Shoes</a></li>
+								<li><a href="#">Face</a></li>
 							</ul>
 						</div>
 					</div>
@@ -620,8 +641,8 @@
 		<div class="footer-bottom">
 			<div class="container">
 				<div class="row">
-					<p class="pull-left">Copyright © 2013 E-SHOPPER Inc. All rights reserved.</p>
-					<p class="pull-right">Designed by <span><a target="_blank" href="http://www.themeum.com">Themeum</a></span></p>
+					<p class="pull-left">Copyright © 2025 Cosmetic Shop Inc. All rights reserved.</p>
+					<p class="pull-right">Designed by <span><a target="_blank" href="http://www.themeum.com">Group 4</a></span></p>
 				</div>
 			</div>
 		</div>
