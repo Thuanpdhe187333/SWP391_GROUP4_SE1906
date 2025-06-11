@@ -59,7 +59,7 @@
 				<div class="row">
 					<div class="col-sm-4">
 						<div class="logo pull-left">
-							<a href="index.html"><img src="images/home/logo.png" alt="" /></a>
+							<a href="home"><img src="images/home/logo.png" alt="" /></a>
 						</div>
 						<div class="btn-group pull-right">
 							<div class="btn-group">
@@ -114,10 +114,10 @@
 						</div>
 						<div class="mainmenu pull-left">
 							<ul class="nav navbar-nav collapse navbar-collapse">
-								<li><a href="index.html">Home</a></li>
+								<li><a href="home">Home</a></li>
 								<li class="dropdown"><a href="#" class="active">Shop<i class="fa fa-angle-down"></i></a>
                                     <ul role="menu" class="sub-menu">
-                                        <li><a href="shop.html" class="active">Products</a></li>
+                                        <li><a href="product-list" class="active">Products</a></li>
 										<li><a href="product-details.html">Product Details</a></li> 
 										<li><a href="checkout.html">Checkout</a></li> 
 										<li><a href="cart.html">Cart</a></li> 
@@ -138,7 +138,7 @@
 					<div class="col-sm-3">
 						<div class="search_box pull-right">
                                                     <div class="search_box pull-right">
-                                                        <form action="shop" method="get">
+                                                        <form action="product-list" method="get">
                                                             <input type="text" name="search" placeholder="Search" />
                                                         </form>
                                                     </div>
@@ -189,7 +189,7 @@
                                                                             <div class="panel-body">
                                                                                 <ul>
                                                                                     <c:forEach var="child" items="${parent.children}">
-                                                                                        <li><a href="shop?category=${child.categoryID}">${child.categoryName}</a></li>
+                                                                                        <li><a href="product-list?category=${child.categoryID}">${child.categoryName}</a></li>
                                                                                     </c:forEach>
                                                                                 </ul>
                                                                             </div>
@@ -208,7 +208,7 @@
                                                                             <c:set var="b" value="${entry.key}" />
                                                                             <c:set var="count" value="${entry.value}" />
                                                                             <li>
-                                                                                <a href="shop?brand=${b.brandID}">
+                                                                                <a href="product-list?brand=${b.brandID}">
                                                                                     <span class="pull-right">(${count})</span>
                                                                                     ${b.brandName}
                                                                                 </a>
@@ -271,17 +271,17 @@
                                                 <!-- Optional pagination -->
                                                 <ul class="pagination">
                                                     <c:if test="${currentPage > 1}">
-                                                        <li><a href="shop?page=${currentPage - 1}">&laquo; Prev</a></li>
+                                                        <li><a href="product-list?page=${currentPage - 1}">&laquo; Prev</a></li>
                                                     </c:if>
 
                                                     <c:forEach var="i" begin="1" end="${totalPages}">
                                                         <li class="${i == currentPage ? 'active' : ''}">
-                                                            <a href="shop?page=${i}">${i}</a>
+                                                            <a href="product-list?page=${i}">${i}</a>
                                                         </li>
                                                     </c:forEach>
 
                                                     <c:if test="${currentPage < totalPages}">
-                                                        <li><a href="shop?page=${currentPage + 1}">Next &raquo;</a></li>
+                                                        <li><a href="product-list?page=${currentPage + 1}">Next &raquo;</a></li>
                                                     </c:if>
                                                 </ul>
 					</div><!--features_items-->
