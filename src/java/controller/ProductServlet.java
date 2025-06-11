@@ -1,11 +1,19 @@
 package controller;
 
+import dal.BrandDAO;
+import dal.CategoryDAO;
+import dal.LabelDAO;
 import dal.ProductDAO;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.WebServlet;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import model.Brand;
+import model.Category;
+import model.Label;
 import model.Product;
 
 public class ProductServlet extends HttpServlet {
@@ -21,7 +29,9 @@ public class ProductServlet extends HttpServlet {
             throws ServletException, IOException {
         String action = request.getParameter("action");
         String idRaw = request.getParameter("id");
-
+        CategoryDAO catDAO = new CategoryDAO();
+        BrandDAO brandDAO = new BrandDAO(); 
+        LabelDAO labelDAO = new LabelDAO();
         try {
             
             if ("delete".equals(action) && idRaw != null) {
@@ -38,6 +48,33 @@ public class ProductServlet extends HttpServlet {
 
             List<Product> list = dao.getAllProduct();
             request.setAttribute("products", list);
+            
+            List<Category> categoryList = catDAO.getAllCategories();
+            List<Label> labelList = labelDAO.getAllLabels();
+            List<Brand> brandList = brandDAO.getAllBrands();
+
+            request.setAttribute("categoryList", categoryList);
+            request.setAttribute("labelList", labelList);
+            request.setAttribute("brandList", brandList);
+            
+            Map<Integer, String> categoryMap = new HashMap<>(); //Hien thi CateName trong list edit
+            for (Category c : categoryList) {
+                categoryMap.put(c.getCategoryID(), c.getCategoryName());
+            }
+
+            Map<Integer, String> brandMap = new HashMap<>(); //Hien thi Brandname trong list edit
+            for (Brand b : brandList) {
+                brandMap.put(b.getBrandID(), b.getBrandName());
+            }
+            
+            Map<Integer, String> labelMap = new HashMap<>();
+            for (Label l : labelList) {
+                labelMap.put(l.getLabelID(), l.getLabelName());//Hien thi Labelname trong list edit
+            }
+
+            request.setAttribute("categoryMap", categoryMap);
+            request.setAttribute("brandMap", brandMap);
+            request.setAttribute("labelMap", labelMap);
 
             request.getRequestDispatcher("edit-product.jsp").forward(request, response);
 
@@ -73,7 +110,7 @@ public class ProductServlet extends HttpServlet {
             }
 
             
-            response.sendRedirect("ProductServlet");
+            response.sendRedirect("product-management");
 
         } catch (Exception e) {
             e.printStackTrace();
