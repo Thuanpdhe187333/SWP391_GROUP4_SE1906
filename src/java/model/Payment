@@ -1,0 +1,95 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
+package model;
+import java.sql.Timestamp;
+/**
+ *
+ * @author daidu
+ */
+public class Payment {
+    private int paymentID;
+    private int orderID;
+    private double amount;
+    private String paymentStatus;
+    private Timestamp paymentDate;
+    private String transactionID;
+    private String paymentMethod;
+
+    public Payment() {
+    }
+
+    public Payment(int paymentID, int orderID, double amount, String paymentStatus, Timestamp paymentDate, String transactionID, String paymentMethod) {
+        this.paymentID = paymentID;
+        this.orderID = orderID;
+        this.amount = amount;
+        this.paymentStatus = paymentStatus;
+        this.paymentDate = paymentDate;
+        this.transactionID = transactionID;
+        this.paymentMethod = paymentMethod;
+    }
+
+    public int getPaymentID() {
+        return paymentID;
+    }
+
+    public void setPaymentID(int paymentID) {
+        this.paymentID = paymentID;
+    }
+
+    public int getOrderID() {
+        return orderID;
+    }
+
+    public void setOrderID(int orderID) {
+        this.orderID = orderID;
+    }
+
+    public double getAmount() {
+        return amount;
+    }
+
+    public void setAmount(double amount) {
+        this.amount = amount;
+    }
+
+    public String getPaymentStatus() {
+        return paymentStatus;
+    }
+
+    public void setPaymentStatus(String paymentStatus) {
+        this.paymentStatus = paymentStatus;
+    }
+
+    public Timestamp getPaymentDate() {
+        return paymentDate;
+    }
+
+    public void setPaymentDate(Timestamp paymentDate) {
+        this.paymentDate = paymentDate;
+    }
+
+    public String getTransactionID() {
+        return transactionID;
+    }
+
+    public void setTransactionID(String transactionID) {
+        this.transactionID = transactionID;
+    }
+
+    public String getPaymentMethod() {
+        return paymentMethod;
+    }
+
+    public void setPaymentMethod(String paymentMethod) {
+        this.paymentMethod = paymentMethod;
+    }
+
+    @Override
+    public String toString() {
+        return "Payment{" + "paymentID=" + paymentID + ", orderID=" + orderID + ", amount=" + amount + ", paymentStatus=" + paymentStatus + ", paymentDate=" + paymentDate + ", transactionID=" + transactionID + ", paymentMethod=" + paymentMethod + '}';
+    }
+    
+    
+}
