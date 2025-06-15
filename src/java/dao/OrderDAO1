@@ -1,0 +1,116 @@
+package dal;
+
+import context.DBContext;
+import model.Order;
+
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+
+public class OrderDAO extends DBContext {
+
+    // Thêm đơn hàng mới
+    public boolean addOrder(Order order) {
+        String sql = "INSERT INTO `Order` (UserID, OrderDate, TotalAmount, Status) VALUES (?, ?, ?, ?)";
+        try (PreparedStatement st = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            st.setInt(1, order.getUserID());
+            st.setTimestamp(2, new Timestamp(order.getOrderDate().getTime()));
+            st.setDouble(3, order.getTotalAmount());
+            st.setString(4, order.getStatus());
+
+            int rows = st.executeUpdate();
+            if (rows > 0) {
+                ResultSet rs = st.getGeneratedKeys();
+                if (rs.next()) {
+                    order.setOrderID(rs.getInt(1));
+                }
+                return true;
+            }
+        } catch (SQLException e) {
+            System.out.println("Error in addOrder: " + e.getMessage());
+        }
+        return false;
+    }
+
+    // Lấy tất cả đơn hàng
+    public List<Order> getAllOrders() {
+        List<Order> list = new ArrayList<>();
+        String sql = "SELECT * FROM `Order` ORDER BY OrderDate DESC";
+        try (PreparedStatement st = connection.prepareStatement(sql)) {
+            ResultSet rs = st.executeQuery();
+            while (rs.next()) {
+                list.add(extractOrder(rs));
+            }
+        } catch (SQLException e) {
+            System.out.println("Error in getAllOrders: " + e.getMessage());
+        }
+        return list;
+    }
+
+    // Lấy đơn theo UserID
+    public List<Order> getOrdersByUser(int userId) {
+        List<Order> list = new ArrayList<>();
+        String sql = "SELECT * FROM `Order` WHERE UserID = ? ORDER BY OrderDate DESC";
+        try (PreparedStatement st = connection.prepareStatement(sql)) {
+            st.setInt(1, userId);
+            ResultSet rs = st.executeQuery();
+            while (rs.next()) {
+                list.add(extractOrder(rs));
+            }
+        } catch (SQLException e) {
+            System.out.println("Error in getOrdersByUser: " + e.getMessage());
+        }
+        return list;
+    }
+
+    // Lấy đơn theo OrderID
+    public Order getOrderById(int orderId) {
+        String sql = "SELECT * FROM `Order` WHERE OrderID = ?";
+        try (PreparedStatement st = connection.prepareStatement(sql)) {
+            st.setInt(1, orderId);
+            ResultSet rs = st.executeQuery();
+            if (rs.next()) {
+                return extractOrder(rs);
+            }
+        } catch (SQLException e) {
+            System.out.println("Error in getOrderById: " + e.getMessage());
+        }
+        return null;
+    }
+
+    // Cập nhật trạng thái đơn
+    public boolean updateOrderStatus(int orderId, String status) {
+        String sql = "UPDATE `Order` SET Status = ? WHERE OrderID = ?";
+        try (PreparedStatement st = connection.prepareStatement(sql)) {
+            st.setString(1, status);
+            st.setInt(2, orderId);
+            return st.executeUpdate() > 0;
+        } catch (SQLException e) {
+            System.out.println("Error in updateOrderStatus: " + e.getMessage());
+        }
+        return false;
+    }
+
+    // Xóa đơn hàng
+    public boolean deleteOrder(int orderId) {
+        String sql = "DELETE FROM `Order` WHERE OrderID = ?";
+        try (PreparedStatement st = connection.prepareStatement(sql)) {
+            st.setInt(1, orderId);
+            return st.executeUpdate() > 0;
+        } catch (SQLException e) {
+            System.out.println("Error in deleteOrder: " + e.getMessage());
+        }
+        return false;
+    }
+
+    // Hàm hỗ trợ: convert ResultSet -> Order object
+    private Order extractOrder(ResultSet rs) throws SQLException {
+        return new Order(
+            rs.getInt("OrderID"),
+            rs.getInt("UserID"),
+            rs.getTimestamp("OrderDate"),
+            rs.getDouble("TotalAmount"),
+            rs.getString("Status")
+        );
+    }
+}
