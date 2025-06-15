@@ -1,66 +1,139 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
+ */
+
 package controller;
 
-import dao.CategoryDAO;
+import dal.CategoryDAO;
 import java.io.IOException;
+import java.io.PrintWriter;
+import  jakarta.servlet.ServletException;
+import  jakarta.servlet.http.HttpServlet;
+import  jakarta.servlet.http.HttpServletRequest;
+import  jakarta.servlet.http.HttpServletResponse;
 import java.util.List;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import model.Category;
 
+/**
+ *
+ * @author daidu
+ */
 public class ViewCategoryServlet extends HttpServlet {
+   private final CategoryDAO dao = new CategoryDAO();
+    /** 
+     * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
+    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
+    throws ServletException, IOException {
+        response.setContentType("text/html;charset=UTF-8");
+        try (PrintWriter out = response.getWriter()) {
+            /* TODO output your page here. You may use following sample code. */
+            out.println("<!DOCTYPE html>");
+            out.println("<html>");
+            out.println("<head>");
+            out.println("<title>Servlet ViewCategoryServlet</title>");  
+            out.println("</head>");
+            out.println("<body>");
+            out.println("<h1>Servlet ViewCategoryServlet at " + request.getContextPath () + "</h1>");
+            out.println("</body>");
+            out.println("</html>");
+        }
+    } 
 
-    private static final int PAGE_SIZE = 5;
-
+    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
+    /** 
+     * Handles the HTTP <code>GET</code> method.
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
+    
+    
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-        String keyword = request.getParameter("keyword");
-        String parentIDParam = request.getParameter("parentID");
-        Integer parentID = null;
-        if (parentIDParam != null && !parentIDParam.isEmpty()) {
-            try {
-                parentID = Integer.parseInt(parentIDParam);
-            } catch (NumberFormatException e) {
-                parentID = null;
+        
+        String action = request.getParameter("action");
+        String idRaw = request.getParameter("id");
+
+        try {
+            // Xử lý xóa
+            if ("delete".equals(action) && idRaw != null) {
+                int id = Integer.parseInt(idRaw);
+                dao.deleteCategory(id);
+                response.sendRedirect("category-management");
+                return;
             }
-        }
-        String sortField = request.getParameter("sortField");
-        if (sortField == null || sortField.isEmpty()) {
-            sortField = "CategoryID";
-        }
-        String sortOrder = request.getParameter("sortOrder");
-        if (sortOrder == null || sortOrder.isEmpty()) {
-            sortOrder = "asc";
-        }
-        int page = 1;
-        String pageParam = request.getParameter("page");
-        if (pageParam != null) {
-            try {
-                page = Integer.parseInt(pageParam);
-            } catch (NumberFormatException e) {
-                page = 1;
+
+            // Xử lý edit: hiển thị thông tin category để sửa
+            if ("edit".equals(action) && idRaw != null) {
+                int id = Integer.parseInt(idRaw);
+                Category category = dao.getCategoryByID(id);
+                request.setAttribute("category", category); // truyền dữ liệu sửa
             }
+
+            // Hiển thị danh sách danh mục
+            List<Category> categories = dao.getAllCategories();
+            request.setAttribute("categories", categories);
+            request.getRequestDispatcher("view_category.jsp").forward(request, response);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Lỗi GET: " + e.getMessage());
         }
+    } 
 
-        CategoryDAO dao = new CategoryDAO();
-        int total = dao.countFiltered(keyword, parentID);
-        int totalPages = (int) Math.ceil((double) total / PAGE_SIZE);
-        int offset = (page - 1) * PAGE_SIZE;
+    /** 
+     * Handles the HTTP <code>POST</code> method.
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+    throws ServletException, IOException {
+         try {
+            String idRaw = request.getParameter("id");
+            String name = request.getParameter("name");
+            String parentRaw = request.getParameter("parentID");
 
-        List<Category> list = dao.getFilteredCategories(keyword, parentID, sortField, sortOrder, offset, PAGE_SIZE);
-        List<Category> parentList = dao.getParentCategories();
+            Integer parentID = (parentRaw == null || parentRaw.isEmpty()) ? null : Integer.parseInt(parentRaw);
 
-        request.setAttribute("categoryList", list);
-        request.setAttribute("parentList", parentList);
-        request.setAttribute("keyword", keyword);
-        request.setAttribute("parentID", parentID);
-        request.setAttribute("sortField", sortField);
-        request.setAttribute("sortOrder", sortOrder);
-        request.setAttribute("page", page);
-        request.setAttribute("totalPages", totalPages);
+            Category category = new Category();
+            category.setCategoryName(name);
+            category.setParentID(parentID);
 
-        request.getRequestDispatcher("view_category.jsp").forward(request, response);
+            if (idRaw == null || idRaw.isEmpty()) {
+                // Thêm mới
+                dao.addCategory(category);
+            } else {
+                // Sửa
+                category.setCategoryID(Integer.parseInt(idRaw));
+                dao.editCategory(category);
+            }
+
+            response.sendRedirect("category-management");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Lỗi POST: " + e.getMessage());
+        }
     }
+
+    /** 
+     * Returns a short description of the servlet.
+     * @return a String containing servlet description
+     */
+    @Override
+    public String getServletInfo() {
+        return "Short description";
+    }// </editor-fold>
+
 }
