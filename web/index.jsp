@@ -1,6 +1,7 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -88,6 +89,13 @@
             </a>
         </li>
         
+        <li style="display: inline-block; margin-left: 0px;">
+            <a href="" style="color: red; font-size: 14px; font-family: inherit;">     
+                <i class="fa fa-heart"></i> 
+ 
+                </a>
+        </li>
+        
     </ul>
 </div>
 
@@ -141,12 +149,12 @@
 				<div class="col-sm-12">
 					<div id="slider-carousel" class="carousel slide" data-ride="carousel">
 						<ol class="carousel-indicators">
-							<li data-target="#slider-carousel" data-slide-to="0" class="active"></li>
+							<li data-target="#slider-carousel" data-slide-to="0" class="active" ></li>
 							<li data-target="#slider-carousel" data-slide-to="1"></li>
 							<li data-target="#slider-carousel" data-slide-to="2"></li>
 						</ol>
 						
-						<div class="carousel-inner">
+						<div class="carousel-inner" >
 							<div class="item active">
 								<div class="col-sm-6">
 									<h1><span>Cosmetic</span>Shop</h1>
@@ -601,8 +609,8 @@
 		<div class="footer-bottom">
 			<div class="container">
 				<div class="row">
-					<p class="pull-left">Copyright © 2025 Cosmetic Shop Inc. All rights reserved.</p>
-					<p class="pull-right">Designed by <span><a target="_blank" href="http://www.themeum.com">Group 4</a></span></p>
+					<p class="pull-left">Copyright © 2025 Cosmetic Shop. All rights reserved.</p>
+					<p class="pull-right">Designed by Group 4</a></span></p>
 				</div>
 			</div>
 		</div>
