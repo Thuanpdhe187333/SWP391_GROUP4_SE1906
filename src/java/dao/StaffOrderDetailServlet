@@ -1,0 +1,77 @@
+package controller;
+
+import dal.OrderDAO;
+import dal.OrderItemDAO;
+import dal.ProductDAO;
+import dal.UserDAO;
+import model.Order;
+import model.OrderItem;
+import model.Product;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.*;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import model.User;
+
+@WebServlet(name = "StaffOrderDetailServlet", urlPatterns = {"/staff/order-detail"})
+
+public class StaffOrderDetailServlet extends HttpServlet {
+
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        UserDAO dao = new UserDAO();
+        List<User> users = dao.getAllUsers();
+        request.setAttribute("users", users);
+        request.getRequestDispatcher("user-list.jsp").forward(request, response);
+    }
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        try {
+            String idParam = request.getParameter("id");
+            if (idParam == null || idParam.isEmpty()) {
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing order ID");
+                return;
+            }
+
+            int orderId = Integer.parseInt(idParam);
+            OrderDAO orderDAO = new OrderDAO();
+            OrderItemDAO itemDAO = new OrderItemDAO();
+            ProductDAO productDAO = new ProductDAO();
+
+            Order order = orderDAO.getOrderById(orderId);
+            if (order == null) {
+                response.sendError(HttpServletResponse.SC_NOT_FOUND, "Order not found");
+                return;
+            }
+
+            List<OrderItem> items = itemDAO.getItemsByOrderID(orderId);
+            Map<Integer, Product> productMap = new HashMap<>();
+
+            for (OrderItem item : items) {
+                Product product = productDAO.getProductById(item.getProductId());
+                if (product != null) {
+                    productMap.put(item.getProductId(), product);
+                }
+            }
+
+            request.setAttribute("order", order);
+            request.setAttribute("orderItems", items);
+            request.setAttribute("productMap", productMap);
+
+            request.getRequestDispatcher("/views/staff/order-detail.jsp").forward(request, response);
+
+        } catch (NumberFormatException e) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid order ID format");
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.sendRedirect("/error.jsp");
+        }
+    }
+}
