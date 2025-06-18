@@ -62,59 +62,50 @@ public class ProductListServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
         ProductDAO dao = new ProductDAO();
-        List<Product> productList;
-        
-        String brandParam = request.getParameter("brand");
-        if (brandParam != null) {
-            try {
-                int brandId = Integer.parseInt(brandParam);
-                productList = dao.getProductsByBrand(brandId); 
-            } catch (NumberFormatException e) {
-                productList = dao.getAllProduct(); 
-            }
-        } else {
-            productList = dao.getAllProduct(); 
-        }
-        
-        String categoryParam = request.getParameter("category");
-        if (categoryParam != null) {
-            try {
-                int categoryId = Integer.parseInt(categoryParam);
-                productList = dao.getProductByCateID(categoryId); // gọi hàm bạn vừa viết
-            } catch (NumberFormatException e) {
-                productList = dao.getAllProduct(); // fallback nếu lỗi
-            }
-        }
-        
+
+        // Lấy các tham số filter & sort
         String keyword = request.getParameter("search");
-        if (keyword != null && !keyword.trim().isEmpty()) {
-            productList = dao.searchProductsByName(keyword.trim());
-        } else {
-            productList = dao.getAllProduct();
-        }
-        
-        int page = 1;
-        int pageSize = 9;
+        String categoryParam = request.getParameter("category");
+        String brandParam = request.getParameter("brand");
+        String sort = request.getParameter("sort");
         String pageParam = request.getParameter("page");
-        if (pageParam != null) {
-            try {
-                page = Integer.parseInt(pageParam);
-            } catch (NumberFormatException e) {
-                page = 1;
-            }
-        }
 
-        int totalProducts = productList.size();
+        Integer categoryId = null;
+        Integer brandId = null;
+        int currentPage = 1;
+        int pageSize = 9;
+
+        try {
+            if (categoryParam != null) categoryId = Integer.parseInt(categoryParam);
+            if (brandParam != null) brandId = Integer.parseInt(brandParam);
+        } catch (NumberFormatException ignored) {}
+
+        try {
+            if (pageParam != null) currentPage = Integer.parseInt(pageParam);
+        } catch (NumberFormatException ignored) {}
+
+        // Gọi DAO lấy danh sách theo điều kiện
+        List<Product> filteredList = dao.getFilteredAndSortedProducts(keyword, categoryId, brandId, sort);
+
+        // Phân trang
+        int totalProducts = filteredList.size();
         int totalPages = (int) Math.ceil((double) totalProducts / pageSize);
-        int fromIndex = (page - 1) * pageSize;
+        int fromIndex = (currentPage - 1) * pageSize;
         int toIndex = Math.min(fromIndex + pageSize, totalProducts);
-        List<Product> pagedList = productList.subList(fromIndex, toIndex);
-        
+        List<Product> pagedList = filteredList.subList(fromIndex, toIndex);
 
+        // Gửi danh sách sản phẩm và thông tin phân trang
         request.setAttribute("productList", pagedList);
-        request.setAttribute("currentPage", page);
+        request.setAttribute("currentPage", currentPage);
         request.setAttribute("totalPages", totalPages);
-        
+
+        // Gửi lại các tham số để giữ trạng thái giao diện
+        request.setAttribute("sort", sort);
+        request.setAttribute("category", categoryParam);
+        request.setAttribute("brand", brandParam);
+        request.setAttribute("keyword", keyword);
+
+        // Gửi danh sách category + brand
         CategoryDAO categoryDao = new CategoryDAO();
         List<Category> parents = categoryDao.getParentCategories();
         for (Category parent : parents) {
@@ -122,13 +113,15 @@ public class ProductListServlet extends HttpServlet {
             parent.setChildren(children);
         }
         request.setAttribute("categoryList", parents);
-        
+
         BrandDAO brandDAO = new BrandDAO();
         List<Brand> brandList = brandDAO.getAllBrands();
         request.setAttribute("brandList", brandList);
-        
+
         Map<Brand, Integer> brandMap = brandDAO.getBrandWithProductCount();
         request.setAttribute("brandMap", brandMap);
+
+        // Forward đến JSP
         request.getRequestDispatcher("product-list.jsp").forward(request, response);
 
     } 
