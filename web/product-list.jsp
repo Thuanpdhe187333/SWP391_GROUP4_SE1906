@@ -235,6 +235,19 @@
 				
 				<div class="col-sm-9 padding-right">
 					<div class="features_items"><!--features_items-->
+						<div class="text-right mb-3" style="margin-bottom: 20px;">
+						                                <form method="get" action="product-list" class="form-inline" style="display: inline-flex; align-items: center; gap: 6px;">
+						                                    <input type="hidden" name="category" value="${param.category}">
+						                                    <input type="hidden" name="brand" value="${param.brand}">
+						                                    <input type="hidden" name="page" value="${currentPage}">
+						
+						                                    <label for="sort" class="control-label" style="margin-right: 5px;">Sắp xếp:</label>
+						                                    <select name="sort" id="sort" onchange="this.form.submit()" class="form-control" style="height: 30px; padding: 2px 8px;">
+						                                        <option value="price_asc" ${param.sort == 'price_asc' ? 'selected' : ''}>Giá Tăng Dần ↑</option>
+						                                        <option value="price_desc" ${param.sort == 'price_desc' ? 'selected' : ''}>Giá Giảm Dần ↓</option>
+						                                    </select>
+						                                </form>
+						                            </div>
 						<h2 class="title text-center">Features Items</h2>
 						<c:forEach var="p" items="${productList}">
                                                     <div class="col-sm-4">
@@ -270,20 +283,30 @@
 
                                                 <!-- Optional pagination -->
                                                 <ul class="pagination">
-                                                    <c:if test="${currentPage > 1}">
-                                                        <li><a href="product-list?page=${currentPage - 1}">&laquo; Prev</a></li>
-                                                    </c:if>
-
-                                                    <c:forEach var="i" begin="1" end="${totalPages}">
-                                                        <li class="${i == currentPage ? 'active' : ''}">
-                                                            <a href="product-list?page=${i}">${i}</a>
-                                                        </li>
-                                                    </c:forEach>
-
-                                                    <c:if test="${currentPage < totalPages}">
-                                                        <li><a href="product-list?page=${currentPage + 1}">Next &raquo;</a></li>
-                                                    </c:if>
-                                                </ul>
+			                                <c:if test="${currentPage > 1}">
+			                                    <li>
+			                                        <a href="product-list?page=${currentPage - 1}&sort=${param.sort}&category=${param.category}&brand=${param.brand}">
+			                                            &laquo; Prev
+			                                        </a>
+			                                    </li>
+			                                </c:if>
+			
+			                                <c:forEach var="i" begin="1" end="${totalPages}">
+			                                    <li class="${i == currentPage ? 'active' : ''}">
+			                                        <a href="product-list?page=${i}&sort=${param.sort}&category=${param.category}&brand=${param.brand}">
+			                                            ${i}
+			                                        </a>
+			                                    </li>
+			                                </c:forEach>
+			
+			                                <c:if test="${currentPage < totalPages}">
+			                                    <li>
+			                                        <a href="product-list?page=${currentPage + 1}&sort=${param.sort}&category=${param.category}&brand=${param.brand}">
+			                                            Next &raquo;
+			                                        </a>
+			                                    </li>
+			                                </c:if>
+			                            </ul>
 					</div><!--features_items-->
 				</div>
 			</div>
