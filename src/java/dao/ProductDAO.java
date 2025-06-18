@@ -344,6 +344,63 @@ public class ProductDAO extends DBContext{
         return 0;
     }
 
+   public List<Product> getFilteredAndSortedProducts(String keyword, Integer categoryId, Integer brandId, String sort) {
+        List<Product> list = new ArrayList<>();
+        StringBuilder sql = new StringBuilder("SELECT * FROM Products WHERE 1=1");
 
+        // Điều kiện lọc
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            sql.append(" AND ProductName LIKE ?");
+        }
+        if (categoryId != null) {
+            sql.append(" AND CategoryID = ?");
+        }
+        if (brandId != null) {
+            sql.append(" AND BrandID = ?");
+        }
+
+        // Sắp xếp
+        if ("price_asc".equals(sort)) {
+            sql.append(" ORDER BY Price ASC");
+        } else if ("price_desc".equals(sort)) {
+            sql.append(" ORDER BY Price DESC");
+        } else {
+            sql.append(" ORDER BY ProductID DESC"); // mặc định: mới nhất
+        }
+
+        try (PreparedStatement ps = connection.prepareStatement(sql.toString())) {
+
+            int paramIndex = 1;
+            if (keyword != null && !keyword.trim().isEmpty()) {
+                ps.setString(paramIndex++, "%" + keyword.trim() + "%");
+            }
+            if (categoryId != null) {
+                ps.setInt(paramIndex++, categoryId);
+            }
+            if (brandId != null) {
+                ps.setInt(paramIndex++, brandId);
+            }
+
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Product p = new Product();
+                p.setProductID(rs.getInt("ProductID"));
+                p.setProductName(rs.getString("ProductName"));
+                p.setDescription(rs.getString("Description"));
+                p.setPrice(rs.getDouble("Price"));
+                p.setQuantity(rs.getInt("Quantity"));
+                p.setImage(rs.getString("Image"));
+                p.setCategoryID(rs.getInt("CategoryID"));
+                p.setLabelID(rs.getInt("LabelID"));
+                p.setBrandID(rs.getInt("BrandID"));
+                p.setCreateAt(rs.getTimestamp("CreatedAt"));
+                list.add(p);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return list;
+    }
 
 }
