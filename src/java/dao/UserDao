@@ -1,128 +1,191 @@
 package dal;
 
+import context.DBContext;
 import model.User;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class UserDAO extends DBContext {
 
-    // Đăng nhập: kiểm tra username và password
-    public User checkLogin(String username, String passwordHash) {
-        String sql = "SELECT * FROM Users WHERE Username = ? AND PasswordHash = ?";
-        try (PreparedStatement st = connection.prepareStatement(sql)) {
-            st.setString(1, username);
-            st.setString(2, passwordHash);
-            ResultSet rs = st.executeQuery();
-            if (rs.next()) {
-                return mapUser(rs);
+    public UserDAO() {
+    }
+    
+        // Kiểm tra username đã tồn tại chưa
+    public boolean checkUsernameExist(String username) {
+        String sql = "SELECT 1 FROM Users WHERE Username = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, username);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next(); // trả về true nếu username tồn tại
             }
-        } catch (SQLException e) {
-            System.out.println("Error in checkLogin: " + e.getMessage());
+        } catch (SQLException ex) {
+            Logger.getLogger(UserDAO.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+    }
+
+    // Thêm người dùng mới (gọi alias cho addUser)
+    public boolean insertUser(User user) {
+        return addUser(user);
+    }
+
+    // Thêm người dùng mới
+    public boolean addUser(User user) {
+        String sql = "INSERT INTO Users (Username, PasswordHash, FullName, Email, Role, CreatedAt, Gender, PhoneNumber, Address, Dob) "
+                   + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, user.getUsername());
+            ps.setString(2, user.getPasswordHash());
+            ps.setString(3, user.getFullName());
+            ps.setString(4, user.getEmail());
+            ps.setString(5, user.getRole());
+            ps.setTimestamp(6, new Timestamp(user.getCreatedAt().getTime()));
+            ps.setString(7, user.getGender());
+            ps.setString(8, user.getPhoneNumber());
+            ps.setString(9, user.getAddress());
+
+            if (user.getDob() != null) {
+                ps.setDate(10, new java.sql.Date(user.getDob().getTime()));
+            } else {
+                ps.setNull(10, Types.DATE);
+            }
+            return ps.executeUpdate() > 0;
+
+        } catch (SQLException ex) {
+            Logger.getLogger(UserDAO.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+    }
+    
+    // Cập nhật thông tin người dùng (không đổi mật khẩu hoặc ngày tạo)
+    public boolean updateUser(User user) {
+        String sql = "UPDATE Users SET Username = ?, FullName = ?, Email = ?, Role = ?, Gender = ?, PhoneNumber = ?, Address = ?, Dob = ? WHERE UserID = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, user.getUsername());
+            ps.setString(2, user.getFullName());
+            ps.setString(3, user.getEmail());
+            ps.setString(4, user.getRole());
+            ps.setString(5, user.getGender());
+            ps.setString(6, user.getPhoneNumber());
+            ps.setString(7, user.getAddress());
+
+            if (user.getDob() != null) {
+                ps.setDate(8, new java.sql.Date(user.getDob().getTime()));
+            } else {
+                ps.setNull(8, Types.DATE);
+            }
+
+            ps.setInt(9, user.getUserId());
+
+            return ps.executeUpdate() > 0;
+        } catch (SQLException ex) {
+            Logger.getLogger(UserDAO.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+    }
+
+    // Cập nhật thông tin profile đơn giản (dùng trong user settings)
+    public boolean updateUserProfile(User user) {
+        String sql = "UPDATE Users SET PhoneNumber = ?, Gender = ?, Dob = ? WHERE UserID = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, user.getPhoneNumber());
+            ps.setString(2, user.getGender());
+
+            if (user.getDob() != null) {
+                ps.setDate(3, new java.sql.Date(user.getDob().getTime()));
+            } else {
+                ps.setNull(3, Types.DATE);
+            }
+
+            ps.setInt(4, user.getUserId());
+
+            return ps.executeUpdate() > 0;
+        } catch (SQLException ex) {
+            Logger.getLogger(UserDAO.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+    }
+
+    // Xóa người dùng theo ID
+    public boolean deleteUser(int userId) {
+        String sql = "DELETE FROM Users WHERE UserID = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, userId);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException ex) {
+            Logger.getLogger(UserDAO.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+    }
+
+    // Lấy người dùng theo ID
+    public User getUserById(int userId) {
+        String sql = "SELECT * FROM Users WHERE UserID = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, userId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return extractUserFromResultSet(rs);
+                }
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(UserDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
         return null;
     }
 
-    // Lấy toàn bộ user
+    // Xác thực đăng nhập người dùng
+    public User authenticate(String username, String passwordHash) {
+        String sql = "SELECT * FROM Users WHERE Username = ? AND PasswordHash = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, username);
+            ps.setString(2, passwordHash);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return extractUserFromResultSet(rs);
+                }
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(UserDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
+
+    // Trả về danh sách tất cả người dùng
     public List<User> getAllUsers() {
         List<User> list = new ArrayList<>();
         String sql = "SELECT * FROM Users";
-        try (PreparedStatement st = connection.prepareStatement(sql)) {
-            ResultSet rs = st.executeQuery();
+        try (PreparedStatement ps = connection.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
-                list.add(mapUser(rs));
+                list.add(extractUserFromResultSet(rs));
             }
-        } catch (SQLException e) {
-            System.out.println("Error in getAllUsers: " + e.getMessage());
+        } catch (SQLException ex) {
+            Logger.getLogger(UserDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
         return list;
     }
 
-    // Lấy user theo ID
-    public User getUserById(int id) {
-        String sql = "SELECT * FROM Users WHERE UserID = ?";
-        try (PreparedStatement st = connection.prepareStatement(sql)) {
-            st.setInt(1, id);
-            ResultSet rs = st.executeQuery();
-            if (rs.next()) {
-                return mapUser(rs);
-            }
-        } catch (SQLException e) {
-            System.out.println("Error in getUserById: " + e.getMessage());
-        }
-        return null;
+    // Hàm tiện ích tạo object User từ kết quả ResultSet
+    private User extractUserFromResultSet(ResultSet rs) throws SQLException {
+        User user = new User();
+        user.setUserId(rs.getInt("UserID"));
+        user.setUsername(rs.getString("Username"));
+        user.setPasswordHash(rs.getString("PasswordHash"));
+        user.setFullName(rs.getString("FullName"));
+        user.setEmail(rs.getString("Email"));
+        user.setRole(rs.getString("Role"));
+        user.setCreatedAt(rs.getTimestamp("CreatedAt"));
+        user.setGender(rs.getString("Gender"));
+        user.setPhoneNumber(rs.getString("PhoneNumber"));
+        user.setAddress(rs.getString("Address"));
+        user.setDob(rs.getDate("Dob"));
+        return user;
     }
-
-    // Thêm user mới
-    public boolean addUser(User user) {
-        String sql = "INSERT INTO Users (Username, PasswordHash, FullName, Email, Role, CreatedAt) "
-                   + "VALUES (?, ?, ?, ?, ?, ?)";
-        try (PreparedStatement st = connection.prepareStatement(sql)) {
-            st.setString(1, user.getUsername());
-            st.setString(2, user.getPasswordHash());
-            st.setString(3, user.getFullName());
-            st.setString(4, user.getEmail());
-            st.setString(5, user.getRole());
-            st.setTimestamp(6, new Timestamp(user.getCreatedAt().getTime()));
-            return st.executeUpdate() > 0;
-        } catch (SQLException e) {
-            System.out.println("Error in addUser: " + e.getMessage());
-        }
-        return false;
-    }
-
-    // Cập nhật user
-    public boolean updateUser(User user) {
-        String sql = "UPDATE Users SET Username = ?, PasswordHash = ?, FullName = ?, Email = ?, Role = ? WHERE UserID = ?";
-        try (PreparedStatement st = connection.prepareStatement(sql)) {
-            st.setString(1, user.getUsername());
-            st.setString(2, user.getPasswordHash());
-            st.setString(3, user.getFullName());
-            st.setString(4, user.getEmail());
-            st.setString(5, user.getRole());
-            st.setInt(6, user.getUserId());
-            return st.executeUpdate() > 0;
-        } catch (SQLException e) {
-            System.out.println("Error in updateUser: " + e.getMessage());
-        }
-        return false;
-    }
-
-    // Xóa user
-    public boolean deleteUser(int userId) {
-        String sql = "DELETE FROM Users WHERE UserID = ?";
-        try (PreparedStatement st = connection.prepareStatement(sql)) {
-            st.setInt(1, userId);
-            return st.executeUpdate() > 0;
-        } catch (SQLException e) {
-            System.out.println("Error in deleteUser: " + e.getMessage());
-        }
-        return false;
-    }
-
-    // Kiểm tra username tồn tại
-    public boolean checkUsernameExist(String username) {
-        String sql = "SELECT COUNT(*) FROM Users WHERE Username = ?";
-        try (PreparedStatement st = connection.prepareStatement(sql)) {
-            st.setString(1, username);
-            ResultSet rs = st.executeQuery();
-            if (rs.next()) return rs.getInt(1) > 0;
-        } catch (SQLException e) {
-            System.out.println("Error in checkUsernameExist: " + e.getMessage());
-        }
-        return false;
-    }
-
-    // Helper: chuyển từ ResultSet sang User
-    private User mapUser(ResultSet rs) throws SQLException {
-        return new User(
-                rs.getInt("UserID"),
-                rs.getString("Username"),
-                rs.getString("PasswordHash"),
-                rs.getString("FullName"),
-                rs.getString("Email"),
-                rs.getString("Role"),
-                rs.getTimestamp("CreatedAt")
-        );
-    }
+    
+    
 }
