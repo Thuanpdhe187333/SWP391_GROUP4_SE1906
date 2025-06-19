@@ -29,11 +29,12 @@ public class AddUserServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-
         req.setCharacterEncoding("UTF-8");
         resp.setCharacterEncoding("UTF-8");
 
+        // Lấy dữ liệu từ form
         String username = req.getParameter("username");
+        String password = req.getParameter("password");
         String fullName = req.getParameter("fullName");
         String email = req.getParameter("email");
         String role = req.getParameter("role");
@@ -41,35 +42,42 @@ public class AddUserServlet extends HttpServlet {
         String phone = req.getParameter("phoneNumber");
         String address = req.getParameter("address");
         String dobStr = req.getParameter("dob");
-        String password = req.getParameter("password");
 
         try {
             // Kiểm tra các trường bắt buộc
-            if (isEmpty(username) || isEmpty(fullName) || isEmpty(email) || isEmpty(role)
-                    || isEmpty(gender) || isEmpty(phone) || isEmpty(address)
-                    || isEmpty(dobStr) || isEmpty(password)) {
+            if (isEmpty(username) || isEmpty(password) || isEmpty(fullName) || isEmpty(email)
+                    || isEmpty(role) || isEmpty(gender) || isEmpty(phone)
+                    || isEmpty(address) || isEmpty(dobStr)) {
                 req.setAttribute("error", "Vui lòng nhập đầy đủ tất cả các thông tin.");
                 req.getRequestDispatcher("addUser.jsp").forward(req, resp);
                 return;
             }
 
-            // Parse ngày sinh
+            // Kiểm tra định dạng số điện thoại
+            if (!phone.matches("^0\\d{9}$")) {
+                req.setAttribute("error", "Số điện thoại phải bắt đầu bằng số 0 và gồm đúng 10 chữ số.");
+                req.getRequestDispatcher("addUser.jsp").forward(req, resp);
+                return;
+            }
+
+            // Chuyển đổi ngày sinh
             LocalDate dob = LocalDate.parse(dobStr);
 
+            // Tạo đối tượng User
             User user = new User();
             user.setUsername(username);
+            user.setPasswordHash(md5(password)); // Có thể thay bằng Bcrypt nếu muốn bảo mật cao hơn
             user.setFullName(fullName);
             user.setEmail(email);
             user.setRole(role);
+            user.setCreatedAt(new Timestamp(System.currentTimeMillis()));
             user.setGender(gender);
             user.setPhoneNumber(phone);
             user.setAddress(address);
             user.setDob(java.sql.Date.valueOf(dob));
-            user.setCreatedAt(new Timestamp(System.currentTimeMillis()));
-            user.setPasswordHash(md5(password));
 
+            // Gọi DAO để lưu
             boolean success = userDAO.insertUser(user);
-
             if (success) {
                 resp.sendRedirect("user-list");
             } else {
@@ -78,17 +86,15 @@ public class AddUserServlet extends HttpServlet {
             }
 
         } catch (Exception e) {
-            req.setAttribute("error", "Lỗi khi tạo người dùng: " + e.getMessage());
+            req.setAttribute("error", "Lỗi hệ thống: " + e.getMessage());
             req.getRequestDispatcher("addUser.jsp").forward(req, resp);
         }
     }
 
-    // Hàm kiểm tra chuỗi rỗng
     private boolean isEmpty(String str) {
         return str == null || str.trim().isEmpty();
     }
 
-    // Hàm mã hóa MD5
     private String md5(String input) {
         try {
             java.security.MessageDigest md = java.security.MessageDigest.getInstance("MD5");
