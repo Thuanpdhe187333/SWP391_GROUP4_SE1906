@@ -129,7 +129,7 @@
                 <!-- Gender -->
                 <label>Giới tính:</label>
                 <select name="gender" required>
-                    <option value="">-- Chọn giới tính --</option>
+                    <option value="">- Chọn giới tính -</option>
                     <option value="Nam">Nam</option>
                     <option value="Nữ">Nữ</option>
                     <option value="Other">Khác</option>
