@@ -1,0 +1,88 @@
+package controller;
+
+import dal.UserDAO;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.*;
+import model.User;
+
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+@WebServlet(name = "RegisterServlet", urlPatterns = {"/login"})
+public class RegisterServlet extends HttpServlet {
+
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        request.getRequestDispatcher("login.jsp").forward(request, response);
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        request.setCharacterEncoding("UTF-8");
+
+        // Lấy thông tin từ form đăng ký
+        String username = request.getParameter("username");
+        String password = request.getParameter("password");
+        String fullName = request.getParameter("fullName");
+        String email = request.getParameter("email");
+        String gender = request.getParameter("gender");
+        String phoneNumber = request.getParameter("phoneNumber");
+        String address = request.getParameter("address");
+        String dobStr = request.getParameter("dob");
+
+        UserDAO userDAO = new UserDAO();
+
+        // Kiểm tra xem tên đăng nhập đã tồn tại chưa
+        if (userDAO.checkUsernameExist(username)) {
+            request.setAttribute("errorMessage", "Tên đăng nhập đã tồn tại!");
+            request.getRequestDispatcher("login.jsp").forward(request, response);
+            return;
+        }
+
+        // Chuyển đổi chuỗi ngày sinh thành đối tượng Date
+        Date dob = null;
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            dob = sdf.parse(dobStr);  // Chuyển đổi từ chuỗi thành Date
+        } catch (Exception e) {
+            request.setAttribute("errorMessage", "Ngày sinh không hợp lệ! Định dạng đúng: yyyy-MM-dd");
+            request.getRequestDispatcher("login.jsp").forward(request, response);
+            return;
+        }
+
+        // Tạo đối tượng User mới
+        User newUser = new User();
+        newUser.setUsername(username);
+        newUser.setPasswordHash(password); // Nên mã hóa mật khẩu trước khi lưu
+        newUser.setFullName(fullName);
+        newUser.setEmail(email);
+        newUser.setGender(gender);
+        newUser.setPhoneNumber(phoneNumber);
+        newUser.setAddress(address);
+        newUser.setDob(dob);  // Gán ngày sinh
+        newUser.setRole("Customer");
+        newUser.setCreatedAt(new Date());  // Lấy thời gian hiện tại cho ngày tạo tài khoản
+
+        // Thêm người dùng vào cơ sở dữ liệu
+        boolean success = userDAO.addUser(newUser);
+
+        // Kiểm tra kết quả thêm người dùng
+        if (success) {
+            request.setAttribute("successMessage", "Đăng ký thành công! Mời bạn đăng nhập.");
+            request.getRequestDispatcher("login.jsp").forward(request, response);
+        } else {
+            request.setAttribute("errorMessage", "Đăng ký thất bại! Vui lòng thử lại.");
+            request.getRequestDispatcher("login.jsp").forward(request, response);
+        }
+    }
+
+    @Override
+    public String getServletInfo() {
+        return "Servlet xử lý đăng ký người dùng mới";
+    }
+}
