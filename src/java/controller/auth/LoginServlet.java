@@ -28,7 +28,7 @@ public class LoginServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
-
+            
         String username = request.getParameter("Username");
         String password = request.getParameter("PasswordHash");
 
@@ -37,6 +37,7 @@ public class LoginServlet extends HttpServlet {
         User user = authenticate(username, password);
         if (user != null) {
             HttpSession session = request.getSession();
+             session.setAttribute("user", user);
             session.setAttribute("currentUser", user);
 
             // 🔐 Gán và in quyền
