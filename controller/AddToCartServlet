@@ -1,0 +1,64 @@
+package controller;
+
+import dal.ProductDAO;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.*;
+import model.Product;
+import model.CartItem;
+
+import java.io.IOException;
+import java.util.*;
+
+@WebServlet("/add-to-cart")
+public class AddToCartServlet extends HttpServlet {
+
+    protected void processAddToCart(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String idParam = request.getParameter("id");
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+
+        if (idParam == null || !idParam.matches("\\d+")) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().write("{\"error\":\"ID sản phẩm không hợp lệ.\"}");
+            return;
+        }
+
+        int id = Integer.parseInt(idParam);
+        HttpSession session = request.getSession();
+
+        ProductDAO dao = new ProductDAO();
+        Product product = dao.getProductById(id);
+
+        if (product == null) {
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            response.getWriter().write("{\"error\":\"Không tìm thấy sản phẩm.\"}");
+            return;
+        }
+
+        Map<Integer, CartItem> cart = (Map<Integer, CartItem>) session.getAttribute("cart");
+        if (cart == null) cart = new HashMap<>();
+
+        CartItem item = cart.get(id);
+        if (item == null) {
+            cart.put(id, new CartItem(product, 1));
+        } else {
+            item.setQuantity(item.getQuantity() + 1);
+        }
+
+        session.setAttribute("cart", cart);
+
+        int totalItems = cart.values().stream().mapToInt(CartItem::getQuantity).sum();
+        response.getWriter().write("{\"totalItems\":" + totalItems + "}");
+    }
+
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        processAddToCart(request, response);
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        processAddToCart(request, response);
+    }
+}
