@@ -1,107 +1,106 @@
 package dal;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.util.ArrayList;
-import java.util.List;
-
+import context.DBContext;
 import model.Order;
 
-public class OrderDAO extends DBContext {
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
-    // Lấy danh sách tất cả đơn hàng
-    public List<Order> getAllOrders() {
-        List<Order> list = new ArrayList<>();
-        String sql = "SELECT * FROM Orders ORDER BY OrderDate DESC";
-        try {
-            PreparedStatement ps = connection.prepareStatement(sql);
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                Order o = new Order(
-                    rs.getInt("OrderID"),
-                    rs.getString("CustomerName"),
-                    rs.getString("Email"),
-                    rs.getString("Address"),
-                    rs.getString("Phone"),
-                    rs.getTimestamp("OrderDate"),
-                    rs.getDouble("TotalAmount"),
-                    rs.getString("Status")
-                );
-                list.add(o);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return list;
+public class OrderDAO {
+
+    private Connection conn;
+
+    public OrderDAO() throws SQLException {
+        DBContext dbContext = new DBContext();
+        this.conn = dbContext.getConnection();
     }
 
-    // Thêm đơn hàng mới
-    public void addOrder(String customerName, String email, String address, String phone,
-                         double totalAmount, String status) {
-        String sql = "INSERT INTO Orders (CustomerName, Email, Address, Phone, TotalAmount, Status) " +
-                     "VALUES (?, ?, ?, ?, ?, ?)";
-        try {
-            PreparedStatement ps = connection.prepareStatement(sql);
-            ps.setString(1, customerName);
-            ps.setString(2, email);
-            ps.setString(3, address);
-            ps.setString(4, phone);
-            ps.setDouble(5, totalAmount);
-            ps.setString(6, status);
-            ps.executeUpdate();
-        } catch (Exception e) {
-            e.printStackTrace();
+    // Insert new order
+    public boolean insertOrder(Order order) throws SQLException {
+        String sql = "INSERT INTO Orders (userId, orderDate, shippingAddress, totalAmount, status) VALUES (?, ?, ?, ?, ?)";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, order.getUserId());
+            ps.setTimestamp(2, new Timestamp(order.getOrderDate().getTime()));
+            ps.setString(3, order.getShippingAddress());
+            ps.setDouble(4, order.getTotalAmount());
+            ps.setString(5, order.getStatus());
+            return ps.executeUpdate() > 0;
         }
     }
 
-    // Lấy đơn hàng theo ID
-    public Order getOrderById(int orderId) {
-        String sql = "SELECT * FROM Orders WHERE OrderID = ?";
-        try {
-            PreparedStatement ps = connection.prepareStatement(sql);
+    // Update existing order
+    public boolean updateOrder(Order order) throws SQLException {
+        String sql = "UPDATE Orders SET userId=?, orderDate=?, shippingAddress=?, totalAmount=?, status=? WHERE orderId=?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, order.getUserId());
+            ps.setTimestamp(2, new Timestamp(order.getOrderDate().getTime()));
+            ps.setString(3, order.getShippingAddress());
+            ps.setDouble(4, order.getTotalAmount());
+            ps.setString(5, order.getStatus());
+            ps.setInt(6, order.getOrderId());
+            return ps.executeUpdate() > 0;
+        }
+    }
+
+    // Delete order by orderId
+    public boolean deleteOrder(int orderId) throws SQLException {
+        String sql = "DELETE FROM Orders WHERE orderId=?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, orderId);
+            return ps.executeUpdate() > 0;
+        }
+    }
+
+    // Get order by orderId
+    public Order getOrderById(int orderId) throws SQLException {
+        String sql = "SELECT * FROM Orders WHERE orderId=?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, orderId);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-                return new Order(
-                    rs.getInt("OrderID"),
-                    rs.getString("CustomerName"),
-                    rs.getString("Email"),
-                    rs.getString("Address"),
-                    rs.getString("Phone"),
-                    rs.getTimestamp("OrderDate"),
-                    rs.getDouble("TotalAmount"),
-                    rs.getString("Status")
-                );
+                return extractOrder(rs);
             }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
         return null;
     }
 
-    // Cập nhật trạng thái đơn hàng
-    public void updateOrderStatus(int orderId, String newStatus) {
-        String sql = "UPDATE Orders SET Status = ? WHERE OrderID = ?";
-        try {
-            PreparedStatement ps = connection.prepareStatement(sql);
-            ps.setString(1, newStatus);
-            ps.setInt(2, orderId);
-            ps.executeUpdate();
-        } catch (Exception e) {
-            e.printStackTrace();
+    // Get all orders
+    public List<Order> getAllOrders() throws SQLException {
+        List<Order> list = new ArrayList<>();
+        String sql = "SELECT * FROM Orders";
+        try (Statement st = conn.createStatement()) {
+            ResultSet rs = st.executeQuery(sql);
+            while (rs.next()) {
+                list.add(extractOrder(rs));
+            }
         }
+        return list;
     }
 
-    // Xóa đơn hàng theo ID
-    public void deleteOrder(int orderId) {
-        String sql = "DELETE FROM Orders WHERE OrderID = ?";
-        try {
-            PreparedStatement ps = connection.prepareStatement(sql);
-            ps.setInt(1, orderId);
-            ps.executeUpdate();
-        } catch (Exception e) {
-            e.printStackTrace();
+    // Get orders by userId
+    public List<Order> getOrdersByUserId(int userId) throws SQLException {
+        List<Order> list = new ArrayList<>();
+        String sql = "SELECT * FROM Orders WHERE userId=?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, userId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                list.add(extractOrder(rs));
+            }
         }
+        return list;
+    }
+
+    // Helper method to map ResultSet to Order object
+    private Order extractOrder(ResultSet rs) throws SQLException {
+        int orderId = rs.getInt("orderId");
+        int userId = rs.getInt("userId");
+        Date orderDate = new Date(rs.getTimestamp("orderDate").getTime());
+        String shippingAddress = rs.getString("shippingAddress");
+        double totalAmount = rs.getDouble("totalAmount");
+        String status = rs.getString("status");
+        return new Order(orderId, userId, orderDate, shippingAddress, totalAmount, status);
     }
 }
