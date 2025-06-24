@@ -1,80 +1,60 @@
 package model;
 
-import java.sql.Timestamp;
+import java.util.Date;
+import java.util.Objects;
 
 public class Order {
-    private int orderID;
-    private String customerName;
-    private String email;
-    private String address;
-    private String phone;
-    private Timestamp orderDate;
+    private int orderId;
+    private int userId;
+    private Date orderDate;
+    private String shippingAddress;
     private double totalAmount;
     private String status;
 
-    // Constructor mặc định
-    public Order() {}
+    // Constructors
+    public Order() {
+    }
 
-    // Constructor đầy đủ
-    public Order(int orderID, String customerName, String email, String address, String phone,
-                 Timestamp orderDate, double totalAmount, String status) {
-        this.orderID = orderID;
-        this.customerName = customerName;
-        this.email = email;
-        this.address = address;
-        this.phone = phone;
+    public Order(int orderId, int userId, Date orderDate, String shippingAddress, double totalAmount, String status) {
+        this.orderId = orderId;
+        this.userId = userId;
         this.orderDate = orderDate;
+        this.shippingAddress = shippingAddress;
         this.totalAmount = totalAmount;
         this.status = status;
     }
 
     // Getters and Setters
-    public int getOrderID() {
-        return orderID;
+    public int getOrderId() {
+        return orderId;
     }
 
-    public void setOrderID(int orderID) {
-        this.orderID = orderID;
+    public void setOrderId(int orderId) {
+        this.orderId = orderId;
     }
 
-    public String getCustomerName() {
-        return customerName;
+    public int getUserId() {
+        return userId;
     }
 
-    public void setCustomerName(String customerName) {
-        this.customerName = customerName;
+    public void setUserId(int userId) {
+        this.userId = userId;
     }
 
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
-
-    public Timestamp getOrderDate() {
+    public Date getOrderDate() {
         return orderDate;
     }
 
-    public void setOrderDate(Timestamp orderDate) {
+    public void setOrderDate(Date orderDate) {
         this.orderDate = orderDate;
+    }
+
+    public String getShippingAddress() {
+        return shippingAddress;
+    }
+
+    public void setShippingAddress(String shippingAddress) {
+        this.shippingAddress = shippingAddress;
     }
 
     public double getTotalAmount() {
@@ -93,18 +73,36 @@ public class Order {
         this.status = status;
     }
 
-    // toString (giúp in thông tin debug nhanh)
+    // toString method
     @Override
     public String toString() {
         return "Order{" +
-                "orderID=" + orderID +
-                ", customerName='" + customerName + '\'' +
-                ", email='" + email + '\'' +
-                ", address='" + address + '\'' +
-                ", phone='" + phone + '\'' +
+                "orderId=" + orderId +
+                ", userId=" + userId +
                 ", orderDate=" + orderDate +
+                ", shippingAddress='" + shippingAddress + '\'' +
                 ", totalAmount=" + totalAmount +
                 ", status='" + status + '\'' +
                 '}';
+    }
+
+    // equals and hashCode based on orderId
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Order)) return false;
+        Order order = (Order) o;
+        return orderId == order.orderId;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(orderId);
+    }
+
+    // Validate order (optional utility method)
+    public boolean isValid() {
+        return orderDate != null && shippingAddress != null && !shippingAddress.isEmpty()
+                && totalAmount > 0 && status != null && !status.isEmpty();
     }
 }
