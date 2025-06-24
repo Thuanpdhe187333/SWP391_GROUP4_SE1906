@@ -1,0 +1,110 @@
+package controller;
+
+import dal.OrderDAO;
+import model.Order;
+import model.User;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.*;
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.Date;
+import java.util.List;
+
+@WebServlet("/order")
+public class OrderServlet extends HttpServlet {
+
+    private OrderDAO orderDAO;
+
+    @Override
+    public void init() throws ServletException {
+        try {
+            orderDAO = new OrderDAO();
+        } catch (SQLException e) {
+            throw new ServletException("Cannot connect to database", e);
+        }
+    }
+
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        HttpSession session = request.getSession();
+        User user = (User) session.getAttribute("user");
+
+        if (user == null) {
+            response.sendRedirect("login.jsp");
+            return;
+        }
+
+        try {
+            List<Order> orders = orderDAO.getOrdersByUserId(user.getUserId());
+            request.setAttribute("orders", orders);
+        } catch (Exception e) {
+            e.printStackTrace();
+            request.setAttribute("error", "Error: " + e.getMessage());
+        }
+
+        request.getRequestDispatcher("my-orders.jsp").forward(request, response);
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        String action = request.getParameter("action");
+        if (action == null) {
+            doGet(request, response);
+            return;
+        }
+
+        HttpSession session = request.getSession();
+        User user = (User) session.getAttribute("user");
+
+        if (user == null) {
+            response.sendRedirect("login.jsp");
+            return;
+        }
+
+        try {
+            switch (action) {
+                case "create":
+                    createOrder(request, user);
+                    request.setAttribute("success", "Order created successfully!");
+                    break;
+                case "delete":
+                    deleteOrder(request);
+                    request.setAttribute("success", "Order deleted successfully!");
+                    break;
+                default:
+                    request.setAttribute("error", "Invalid action!");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            request.setAttribute("error", "Error: " + e.getMessage());
+        }
+
+        doGet(request, response); // luôn reload lại danh sách
+    }
+
+    private void createOrder(HttpServletRequest request, User user) throws SQLException {
+        String address = request.getParameter("address");
+        double total = Double.parseDouble(request.getParameter("total"));
+        String status = "Pending"; // mặc định
+
+        Order newOrder = new Order();
+        newOrder.setUserId(user.getUserId());
+        newOrder.setOrderDate(new Date());
+        newOrder.setShippingAddress(address);
+        newOrder.setTotalAmount(total);
+        newOrder.setStatus(status);
+
+        orderDAO.insertOrder(newOrder);
+    }
+
+    private void deleteOrder(HttpServletRequest request) throws SQLException {
+        int orderId = Integer.parseInt(request.getParameter("orderId"));
+        orderDAO.deleteOrder(orderId);
+    }
+}
