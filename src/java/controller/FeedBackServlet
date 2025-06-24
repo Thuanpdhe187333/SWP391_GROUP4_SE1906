@@ -1,0 +1,106 @@
+package controller;
+
+import dal.FeedbackDAO;
+import model.Feedback;
+import model.User;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.*;
+
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.Date;
+import java.util.List;
+
+@WebServlet("/feedback")
+public class FeedbackServlet extends HttpServlet {
+
+    private FeedbackDAO feedbackDAO;
+
+    @Override
+    public void init() throws ServletException {
+        try {
+            feedbackDAO = new FeedbackDAO();
+        } catch (SQLException e) {
+            throw new ServletException("Cannot connect to database", e);
+        }
+    }
+
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        String action = request.getParameter("action");
+        if ("view".equals(action)) {
+            int feedbackId = Integer.parseInt(request.getParameter("feedbackId"));
+            try {
+                Feedback feedback = feedbackDAO.getFeedbackById(feedbackId);
+                request.setAttribute("feedback", feedback);
+            } catch (Exception e) {
+                request.setAttribute("error", "Error: " + e.getMessage());
+            }
+            request.getRequestDispatcher("feedback-detail.jsp").forward(request, response);
+            return;
+        }
+
+        // Mặc định: hiển thị danh sách feedback của sản phẩm
+        int productId = Integer.parseInt(request.getParameter("productId"));
+        try {
+            List<Feedback> feedbacks = feedbackDAO.getFeedbacksByProduct(productId);
+            request.setAttribute("feedbacks", feedbacks);
+            request.setAttribute("productId", productId);
+        } catch (Exception e) {
+            request.setAttribute("error", "Error: " + e.getMessage());
+        }
+
+        request.getRequestDispatcher("feedback.jsp").forward(request, response);
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        HttpSession session = request.getSession();
+        User user = (User) session.getAttribute("user");
+
+        if (user == null) {
+            response.sendRedirect("login.jsp");
+            return;
+        }
+
+        String action = request.getParameter("action");
+        try {
+            if ("create".equals(action)) {
+                int productId = Integer.parseInt(request.getParameter("productId"));
+                String content = request.getParameter("content");
+
+                Feedback feedback = new Feedback();
+                feedback.setUserId(user.getUserId());
+                feedback.setProductId(productId);
+                feedback.setContent(content);
+                feedback.setCreatedAt(new Date());
+
+                feedbackDAO.insertFeedback(feedback);
+                request.setAttribute("success", "Feedback created!");
+
+            } else if ("update".equals(action)) {
+                int feedbackId = Integer.parseInt(request.getParameter("feedbackId"));
+                String newContent = request.getParameter("content");
+
+                Feedback existing = feedbackDAO.getFeedbackById(feedbackId);
+                if (existing != null) {
+                    existing.setContent(newContent);
+                    existing.setCreatedAt(new Date());
+                    feedbackDAO.updateFeedback(existing);
+                    request.setAttribute("success", "Feedback updated!");
+                }
+            }
+
+        } catch (Exception e) {
+            request.setAttribute("error", "Error: " + e.getMessage());
+        }
+
+        doGet(request, response);
+    }
+}
