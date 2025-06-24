@@ -1,0 +1,82 @@
+package dal;
+
+import context.DBContext;
+import model.Feedback;
+
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+public class FeedbackDAO {
+    private Connection conn;
+
+    public FeedbackDAO() throws SQLException {
+        DBContext dbContext = new DBContext();
+        this.conn = dbContext.getConnection();
+    }
+
+    public boolean insertFeedback(Feedback feedback) throws SQLException {
+        String sql = "INSERT INTO Feedback (UserID, ProductID, Content, CreatedAt) VALUES (?, ?, ?, ?)";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, feedback.getUserId());
+            ps.setInt(2, feedback.getProductId());
+            ps.setString(3, feedback.getContent());
+            ps.setTimestamp(4, new Timestamp(feedback.getCreatedAt().getTime()));
+            return ps.executeUpdate() > 0;
+        }
+    }
+
+    public boolean updateFeedback(Feedback feedback) throws SQLException {
+        String sql = "UPDATE Feedback SET Content = ?, CreatedAt = ? WHERE FeedbackID = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, feedback.getContent());
+            ps.setTimestamp(2, new Timestamp(feedback.getCreatedAt().getTime()));
+            ps.setInt(3, feedback.getFeedbackId());
+            return ps.executeUpdate() > 0;
+        }
+    }
+
+    public boolean deleteFeedback(int feedbackId) throws SQLException {
+        String sql = "DELETE FROM Feedback WHERE FeedbackID = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, feedbackId);
+            return ps.executeUpdate() > 0;
+        }
+    }
+
+    public Feedback getFeedbackById(int feedbackId) throws SQLException {
+        String sql = "SELECT * FROM Feedback WHERE FeedbackID = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, feedbackId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return extractFeedback(rs);
+            }
+        }
+        return null;
+    }
+
+    public List<Feedback> getFeedbacksByProduct(int productId) throws SQLException {
+        List<Feedback> list = new ArrayList<>();
+        String sql = "SELECT * FROM Feedback WHERE ProductID = ? ORDER BY CreatedAt DESC";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, productId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                list.add(extractFeedback(rs));
+            }
+        }
+        return list;
+    }
+
+    private Feedback extractFeedback(ResultSet rs) throws SQLException {
+        return new Feedback(
+            rs.getInt("FeedbackID"),
+            rs.getInt("UserID"),
+            rs.getInt("ProductID"),
+            rs.getString("Content"),
+            new Date(rs.getTimestamp("CreatedAt").getTime())
+        );
+    }
+}
