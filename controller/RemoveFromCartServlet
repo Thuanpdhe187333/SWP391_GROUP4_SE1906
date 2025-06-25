@@ -1,0 +1,44 @@
+package controller;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.*;
+import java.io.IOException;
+import java.util.Map;
+import model.CartItem;
+
+@WebServlet("/remove-from-cart")
+public class RemoveFromCartServlet extends HttpServlet {
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
+        int id = Integer.parseInt(request.getParameter("id"));
+        HttpSession session = request.getSession();
+        Map<Integer, CartItem> cart = (Map<Integer, CartItem>) session.getAttribute("cart");
+
+        if (cart != null && cart.containsKey(id)) {
+            CartItem item = cart.get(id);
+            if (item.getQuantity() > 1) {
+                item.setQuantity(item.getQuantity() - 1); // giảm số lượng
+            } else {
+                cart.remove(id); // nếu chỉ còn 1, xóa luôn
+            }
+            session.setAttribute("cart", cart);
+        }
+
+        response.sendRedirect("cart.jsp");
+    }
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        int id = Integer.parseInt(request.getParameter("id"));
+        Map<Integer, CartItem> cart = (Map<Integer, CartItem>) request.getSession().getAttribute("cart");
+        if (cart != null && cart.containsKey(id)) {
+            cart.remove(id);
+            request.getSession().setAttribute("cart", cart);
+        }
+        response.setContentType("text/plain");
+        response.getWriter().write("success");
+    }
+}
+
