@@ -83,5 +83,11 @@ public class FlashSaleDAO extends DBContext{
 
         return 0; // Không có sale nào đang active
     }
-
+//public boolean isPalindrome(String input) {        // khai báo hàm kiểm tra palindrome
+   // String clean = input.replaceAll("\\s+", "")     // loại bỏ khoảng trắng
+  //                       .toLowerCase();            // chuyển thành chữ thường
+   // StringBuilder sb = new StringBuilder(clean);    // tạo đối tượng StringBuilder từ chuỗi clean
+  //  String reversed = sb.reverse().toString();      // đảo ngược chuỗi và chuyển về String
+  //  return clean.equals(reversed);                  // so sánh chuỗi gốc và chuỗi đảo ngược
+//}
 }
