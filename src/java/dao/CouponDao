@@ -1,1 +1,87 @@
-c
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
+package dal;
+
+import context.DBContext;
+import model.Payment;
+import java.sql.PreparedStatement;
+import java.util.Optional;
+import java.sql.ResultSet;
+/**
+ *
+ * @author daidu
+ */
+public class PaymentDAO extends DBContext{
+    public void addPayment(Payment p){
+        String sql = "INSERT INTO payments (OrderID, Amount, PaymentStatus, TransactionID, PaymentMethod) "
+                   + "VALUES (?, ?, ?, ?, ?)";
+        try (PreparedStatement ps = connection.prepareStatement(sql)){
+            ps.setInt(1, p.getOrderID());
+            ps.setDouble(2, p.getAmount());
+            ps.setString(3, p.getPaymentStatus());
+            ps.setString(4, p.getTransactionID());
+            ps.setString(5, p.getPaymentMethod());
+            ps.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
+    public void updateStatusByTxnRef(String transactionId, String newStatus) {
+        String sql = "UPDATE payments SET PaymentStatus = ? WHERE TransactionID = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, newStatus);
+            ps.setString(2, transactionId);
+            ps.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
+    public Payment getByTransactionId(String transactionId) {
+        String sql = "SELECT * FROM payments WHERE TransactionID = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, transactionId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                Payment p = new Payment();
+                p.setPaymentID(rs.getInt("PaymentID"));
+                p.setOrderID(rs.getInt("OrderID"));
+                p.setAmount(rs.getDouble("Amount"));
+                p.setPaymentStatus(rs.getString("PaymentStatus"));
+                p.setPaymentDate(rs.getTimestamp("PaymentDate"));
+                p.setTransactionID(rs.getString("TransactionID"));
+                p.setPaymentMethod(rs.getString("PaymentMethod"));
+                return p;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+    
+    public Payment getByOrderId(int orderId) {
+        String sql = "SELECT * FROM payments WHERE OrderID = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, orderId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                Payment p = new Payment();
+                p.setPaymentID(rs.getInt("PaymentID"));
+                p.setOrderID(rs.getInt("OrderID"));
+                p.setAmount(rs.getDouble("Amount"));
+                p.setPaymentStatus(rs.getString("PaymentStatus"));
+                p.setPaymentDate(rs.getTimestamp("PaymentDate"));
+                p.setTransactionID(rs.getString("TransactionID"));
+                p.setPaymentMethod(rs.getString("PaymentMethod"));
+                return p;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+}
