@@ -33,25 +33,34 @@ public class FeedbackServlet extends HttpServlet {
 
         String action = request.getParameter("action");
         if ("view".equals(action)) {
-            int feedbackId = Integer.parseInt(request.getParameter("feedbackId"));
-            try {
-                Feedback feedback = feedbackDAO.getFeedbackById(feedbackId);
-                request.setAttribute("feedback", feedback);
-            } catch (Exception e) {
-                request.setAttribute("error", "Error: " + e.getMessage());
+            String feedbackIdStr = request.getParameter("feedbackId");
+            if (isValidInt(feedbackIdStr)) {
+                int feedbackId = Integer.parseInt(feedbackIdStr);
+                try {
+                    Feedback feedback = feedbackDAO.getFeedbackById(feedbackId);
+                    request.setAttribute("feedback", feedback);
+                } catch (Exception e) {
+                    request.setAttribute("error", "Error: " + e.getMessage());
+                }
+            } else {
+                request.setAttribute("error", "Feedback ID is missing or invalid");
             }
             request.getRequestDispatcher("feedback-detail.jsp").forward(request, response);
             return;
         }
 
-        // Mặc định: hiển thị danh sách feedback của sản phẩm
-        int productId = Integer.parseInt(request.getParameter("productId"));
-        try {
-            List<Feedback> feedbacks = feedbackDAO.getFeedbacksByProduct(productId);
-            request.setAttribute("feedbacks", feedbacks);
-            request.setAttribute("productId", productId);
-        } catch (Exception e) {
-            request.setAttribute("error", "Error: " + e.getMessage());
+        String productIdStr = request.getParameter("productId");
+        if (isValidInt(productIdStr)) {
+            int productId = Integer.parseInt(productIdStr);
+            try {
+                List<Feedback> feedbacks = feedbackDAO.getFeedbacksByProduct(productId);
+                request.setAttribute("feedbacks", feedbacks);
+                request.setAttribute("productId", productId);
+            } catch (Exception e) {
+                request.setAttribute("error", "Error: " + e.getMessage());
+            }
+        } else {
+            request.setAttribute("error", "Product ID is missing or invalid");
         }
 
         request.getRequestDispatcher("feedback.jsp").forward(request, response);
@@ -72,28 +81,38 @@ public class FeedbackServlet extends HttpServlet {
         String action = request.getParameter("action");
         try {
             if ("create".equals(action)) {
-                int productId = Integer.parseInt(request.getParameter("productId"));
-                String content = request.getParameter("content");
+                String productIdStr = request.getParameter("productId");
+                if (isValidInt(productIdStr)) {
+                    int productId = Integer.parseInt(productIdStr);
+                    String content = request.getParameter("content");
 
-                Feedback feedback = new Feedback();
-                feedback.setUserId(user.getUserId());
-                feedback.setProductId(productId);
-                feedback.setContent(content);
-                feedback.setCreatedAt(new Date());
+                    Feedback feedback = new Feedback();
+                    feedback.setUserId(user.getUserId());
+                    feedback.setProductId(productId);
+                    feedback.setContent(content);
+                    feedback.setCreatedAt(new Date());
 
-                feedbackDAO.insertFeedback(feedback);
-                request.setAttribute("success", "Feedback created!");
+                    feedbackDAO.insertFeedback(feedback);
+                    request.setAttribute("success", "Feedback created!");
+                } else {
+                    request.setAttribute("error", "Product ID is missing or invalid");
+                }
 
             } else if ("update".equals(action)) {
-                int feedbackId = Integer.parseInt(request.getParameter("feedbackId"));
-                String newContent = request.getParameter("content");
+                String feedbackIdStr = request.getParameter("feedbackId");
+                if (isValidInt(feedbackIdStr)) {
+                    int feedbackId = Integer.parseInt(feedbackIdStr);
+                    String newContent = request.getParameter("content");
 
-                Feedback existing = feedbackDAO.getFeedbackById(feedbackId);
-                if (existing != null) {
-                    existing.setContent(newContent);
-                    existing.setCreatedAt(new Date());
-                    feedbackDAO.updateFeedback(existing);
-                    request.setAttribute("success", "Feedback updated!");
+                    Feedback existing = feedbackDAO.getFeedbackById(feedbackId);
+                    if (existing != null) {
+                        existing.setContent(newContent);
+                        existing.setCreatedAt(new Date());
+                        feedbackDAO.updateFeedback(existing);
+                        request.setAttribute("success", "Feedback updated!");
+                    }
+                } else {
+                    request.setAttribute("error", "Feedback ID is missing or invalid");
                 }
             }
 
@@ -102,5 +121,15 @@ public class FeedbackServlet extends HttpServlet {
         }
 
         doGet(request, response);
+    }
+
+    private boolean isValidInt(String str) {
+        if (str == null || str.isEmpty()) return false;
+        try {
+            Integer.parseInt(str);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
     }
 }
