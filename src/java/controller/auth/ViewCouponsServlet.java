@@ -2,16 +2,12 @@ package controller.auth;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.*;
 import model.Coupon;
 import context.DBContext;
 
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,7 +18,7 @@ public class ViewCouponsServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
 
-        // Thiết lập encoding
+        // Thiết lập encoding cho hỗ trợ tiếng Việt
         req.setCharacterEncoding("UTF-8");
         res.setCharacterEncoding("UTF-8");
 
@@ -30,8 +26,11 @@ public class ViewCouponsServlet extends HttpServlet {
 
         try (Connection conn = new DBContext().getConnection()) {
 
-            String sql = "SELECT CouponID, Code, Description, Discount, ExpiryDate, UsageLimit, CreatedAt " +
-                         "FROM coupons ORDER BY CreatedAt DESC";
+            String sql = """
+                SELECT CouponID, Code, Description, Discount, ExpiryDate, UsageLimit, CreatedAt
+                FROM coupons
+                ORDER BY CreatedAt DESC
+            """;
 
             try (PreparedStatement stmt = conn.prepareStatement(sql);
                  ResultSet rs = stmt.executeQuery()) {
@@ -49,14 +48,15 @@ public class ViewCouponsServlet extends HttpServlet {
                 }
             }
 
+            // Gán dữ liệu cho request
             req.setAttribute("coupons", coupons);
 
         } catch (Exception e) {
-            e.printStackTrace(); // In log
-            req.setAttribute("error", "Không thể tải danh sách coupon. Lỗi: " + e.getMessage());
+            e.printStackTrace();
+            req.setAttribute("error", "❌ Không thể tải danh sách coupon: " + e.getMessage());
         }
 
-        // ĐÃ CẬP NHẬT LẠI: tên JSP đúng theo bạn yêu cầu
-        req.getRequestDispatcher("ViewCoupons.jsp").forward(req, res);
+        // Chuyển tiếp sang đúng trang JSP hiển thị dashboard
+        req.getRequestDispatcher("CouponDashboard.jsp").forward(req, res);
     }
 }
