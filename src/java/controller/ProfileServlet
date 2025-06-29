@@ -14,87 +14,63 @@ import java.util.Date;
 @WebServlet(name = "ProfileServlet", urlPatterns = {"/profile"})
 public class ProfileServlet extends HttpServlet {
 
-    private UserDAO userDAO;
-
-    @Override
-    public void init() throws ServletException {
-        userDAO = new UserDAO();
-    }
-
-    // Hiển thị trang hồ sơ
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
         HttpSession session = request.getSession();
-        User sessionUser = (User) session.getAttribute("user");
+        User user = (User) session.getAttribute("user");
 
-        if (sessionUser == null) {
+        if (user == null) {
             response.sendRedirect("login.jsp");
             return;
         }
 
-        // Lấy thông tin user từ DB (cập nhật mới nhất)
-        User user = userDAO.getUserById(sessionUser.getUserId());
-
-        // Đưa thông tin user lên request
-        request.setAttribute("user", user);
-        session.setAttribute("user", user);
-
-        // Forward về trang profile.jsp
         request.getRequestDispatcher("profile.jsp").forward(request, response);
     }
 
-    // Xử lý cập nhật thông tin người dùng
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        request.setCharacterEncoding("UTF-8");
-        HttpSession session = request.getSession();
-        User sessionUser = (User) session.getAttribute("user");
-
-        if (sessionUser == null) {
-            response.sendRedirect("login.jsp");
-            return;
-        }
-
         try {
-            // Lấy dữ liệu từ form
+            request.setCharacterEncoding("UTF-8");
+            HttpSession session = request.getSession();
+            User user = (User) session.getAttribute("user");
+
+            if (user == null) {
+                response.sendRedirect("login.jsp");
+                return;
+            }
+
             String phoneNumber = request.getParameter("phoneNumber");
             String gender = request.getParameter("gender");
             String dobStr = request.getParameter("dob");
-            String address = request.getParameter("address");
 
-            // Parse ngày sinh
-            Date dob = null;
+            user.setPhoneNumber(phoneNumber);
+            user.setGender(gender);
+
             if (dobStr != null && !dobStr.trim().isEmpty()) {
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-                dob = sdf.parse(dobStr);
+                Date dob = sdf.parse(dobStr);
+                user.setDob(dob);
             }
 
-            // Cập nhật thông tin user trong object
-            sessionUser.setPhoneNumber(phoneNumber);
-            sessionUser.setGender(gender);
-            sessionUser.setDob(dob);
-            sessionUser.setAddress(address);
+            UserDAO userDAO = new UserDAO();
+            boolean updated = userDAO.updateUserProfile(user);
 
-            // Gọi DAO để cập nhật DB
-            boolean success = userDAO.updateUserProfile(sessionUser);
-
-            if (success) {
-                session.setAttribute("user", sessionUser);
+            if (updated) {
+                session.setAttribute("user", user);
                 request.setAttribute("successMessage", "Cập nhật hồ sơ thành công!");
             } else {
                 request.setAttribute("errorMessage", "Cập nhật thất bại. Vui lòng thử lại.");
             }
 
         } catch (Exception e) {
+            request.setAttribute("errorMessage", "Lỗi xử lý dữ liệu: " + e.getMessage());
             e.printStackTrace();
-            request.setAttribute("errorMessage", "Đã xảy ra lỗi: " + e.getMessage());
         }
 
-        request.setAttribute("user", session.getAttribute("user"));
         request.getRequestDispatcher("profile.jsp").forward(request, response);
     }
 
