@@ -91,12 +91,48 @@
             font-weight: bold;
             margin-bottom: 15px;
         }
+        .btn-sm.btn-warning {
+    background-color: #ffc107;
+    color: black;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+}
+
+.btn-sm.btn-warning:hover {
+    background-color: #e0a800;
+}
+
+.btn-sm.btn-danger {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+}
+
+.btn-sm.btn-danger:hover {
+    background-color: #c82333;
+}
     </style>
 </head>
 <body>
 
 <header>
     <div class="container">
+        <div style="text-align: right; margin-bottom: 10px;">
+            <a href="home" class="btn" style="
+                background-color: #ffffff;
+                color: #FE980F;
+                font-weight: 600;
+                padding: 8px 20px;
+                border: 2px solid #FE980F;
+                border-radius: 30px;
+                text-decoration: none;
+                transition: 0.3s;">
+                <i class="fa fa-home" style="margin-right: 6px;"></i> Home
+            </a>
+        </div>
         <h2>Edit Customer</h2>
     </div>
 </header>
