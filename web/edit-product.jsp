@@ -163,8 +163,19 @@ footer {
 <body>
 
 <header>
-    <div class="container">
-        <h2>Product Management</h2>
+    <div class="container" style="display: flex; justify-content: space-between; align-items: center;">
+        <h2 style="margin: 0;">Product Management</h2>
+        <a href="home" class="btn" style="
+            background-color: #ffffff;
+            color: #FE980F;
+            font-weight: 600;
+            padding: 8px 20px;
+            border: 2px solid #FE980F;
+            border-radius: 30px;
+            text-decoration: none;
+            transition: 0.3s;">
+            <i class="fa fa-home" style="margin-right: 6px;"></i> Home
+        </a>
     </div>
 </header>
 
@@ -179,22 +190,22 @@ footer {
 
         <div class="form-group">
             <label>Product Name</label>
-            <input type="text" name="name" class="form-control" value="${product.productName}" required />
+            <input type="text" name="name" class="form-control" value="${product.productName}" required maxlength="100" />
         </div>
 
         <div class="form-group">
             <label>Description</label>
-            <textarea name="description" class="form-control" rows="2" required>${product.description}</textarea>
+            <textarea name="description" class="form-control" rows="2" required maxlength="500">${product.description}</textarea>
         </div>
 
         <div class="form-group">
             <label>Price</label>
-            <input type="number" step="0.01" name="price" class="form-control" value="${product.price}" required />
+            <input type="number" step="0.01" name="price" class="form-control" value="${product.price}" required min="0" />
         </div>
 
         <div class="form-group">
             <label>Quantity</label>
-            <input type="number" name="quantity" class="form-control" value="${product.quantity}" required />
+            <input type="number" name="quantity" class="form-control" value="${product.quantity}" required min="0" />
         </div>
 
         <div class="form-group">
