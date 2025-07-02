@@ -1,5 +1,7 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -111,6 +113,87 @@
                                     width: 18px;
                                     text-align: center;
                                 }
+                                .product-image-wrapper {
+                                    height: 420px;
+                                    border: 1px solid #f0f0f0;
+                                    margin-bottom: 30px;
+                                    padding: 15px;
+                                    box-sizing: border-box;
+                                    display: flex;
+                                    flex-direction: column;
+                                    justify-content: space-between;
+                                }
+
+                                .single-products {
+                                    height: 100%;
+                                    display: flex;
+                                    flex-direction: column;
+                                    justify-content: space-between;
+                                }
+
+                                .productinfo {
+                                    flex: 1;
+                                    display: flex;
+                                    flex-direction: column;
+                                    align-items: center;
+                                    justify-content: space-between;
+                                    text-align: center;
+                                }
+
+                                .productinfo p {
+                                    min-height: 40px;
+                                }
+                                .search-container {
+                                    display: flex;
+                                    justify-content: flex-end;
+                                    margin-bottom: 20px;
+                                }
+
+                                .search-box {
+                                    position: relative;
+                                    width: 280px;
+                                }
+
+                                .search-box input[type="text"] {
+                                    width: 100%;
+                                    padding: 10px 40px 10px 14px;
+                                    border: 1.5px solid #FE980F;
+                                    border-radius: 30px;
+                                    outline: none;
+                                    transition: 0.3s;
+                                    font-weight: ${not empty param.search ? 'bold' : 'normal'};
+                                }
+
+                                .search-box input[type="text"]::placeholder {
+                                    color: #aaa;
+                                    font-style: italic;
+                                }
+
+                                .search-box input[type="text"]:focus {
+                                    box-shadow: 0 0 6px rgba(254, 152, 15, 0.5);
+                                }
+
+                                .search-box button {
+                                    position: absolute;
+                                    right: 6px;
+                                    top: 50%;
+                                    transform: translateY(-50%);
+                                    background: #FE980F;
+                                    border: none;
+                                    color: white;
+                                    padding: 6px 12px;
+                                    border-radius: 20px;
+                                    cursor: pointer;
+                                    font-weight: bold;
+                                    transition: background-color 0.2s;
+                                }
+
+                                .search-box button:hover {
+                                    background-color: #e07c00;
+                                }
+                                .d-none {
+                                    display: none !important;
+                                }
                             </style>
 
                             <li class="dropdown-hover">
@@ -127,18 +210,18 @@
 
 
                             <li style="display: inline-block; margin-left: 15px;">
-                                <a href="car.jsp" style="color: #000; font-size: 14px; font-family: inherit;">     
+                                <a href="cart.jsp" style="color: #000; font-size: 14px; font-family: inherit;">     
                                     <i class="fa fa-shopping-cart"></i> Cart
 
                                 </a>
                             </li>
 
-                            <li style="display: inline-block; margin-left: 0px;">
-                                <a href="" style="color: red; font-size: 14px; font-family: inherit;">     
-                                    <i class="fa fa-heart"></i> WishList
-
-                                </a>
-                            </li>
+                            <!--                            <li style="display: inline-block; margin-left: 0px;">
+                                                            <a href="" style="color: red; font-size: 14px; font-family: inherit;">     
+                                                                <i class="fa fa-heart"></i> WishList
+                            
+                                                            </a>
+                                                        </li>-->
 
                         </ul>
                     </div>
@@ -171,15 +254,19 @@
                             </style>
                             <ul class="nav navbar-nav collapse navbar-collapse">
                                 <li><a href="home" class="active" style="color: #FF69B4;">Home</a></li>
-                                <li><a href="blog.jsp">Blog</a></li>
+                                <!--                                <li><a href="blog.jsp">Blog</a></li>-->
                                 <li><a href="contact-us.jsp">Contact</a></li>
                                 <li><a href="product-list">About Cosmetic</a></li>  
                             </ul>
                         </div>
                     </div>
-                    <div class="search_box pull-right">
-                        <form action="product-list" method="get" style="display: flex;">
-                            <input type="text" name="search" value="${param.search}" placeholder="Tìm sản phẩm..." style="width: 140px; padding: 4px;">
+                    <div class="search-container">
+                        <form action="product-list" method="get" class="search-box" onsubmit="return validateSearch();">
+                            <input type="text" name="search" id="searchBox"
+                                   maxlength="100"
+                                   value="${param.search}"
+                                   placeholder="🔍 Tìm sản phẩm..." />
+                            <button type="submit">Tìm</button>
 
                             <input type="hidden" name="category" value="${param.category}">
                             <input type="hidden" name="brand" value="${param.brand}">
@@ -187,6 +274,26 @@
                             <input type="hidden" name="page" value="1">
                         </form>
                     </div>
+
+                    <script>
+                        function validateSearch() {
+                            const input = document.getElementById("searchBox").value.trim();
+                            if (input === "") {
+                                alert("Vui lòng nhập từ khóa tìm kiếm.");
+                                return false;
+                            }
+                            if (input.length > 100) {
+                                alert("Từ khóa100 không được vượt quá  ký tự.");
+                                return false;
+                            }
+                            if (/[^a-zA-ZÀ-ỹ0-9\s]/.test(input)) {
+                                alert("Từ khóa không được chứa ký tự đặc biệt.");
+                                return false;
+                            }
+                            return true;
+                        }
+                    </script>
+
 
                 </div>
             </div>
@@ -245,31 +352,66 @@
 
                         </div><!<!-- category -->
 
-                        <div class="brands_products"><!--brands_products-->
+                        <div class="brands_products"> <!-- brand -->
                             <h2>Brands</h2>
                             <div class="brands-name">
-                                <ul class="nav nav-pills nav-stacked">
-                                    <c:forEach var="entry" items="${brandMap}">
-                                        <c:set var="b" value="${entry.key}" />
+                                <ul class="nav nav-pills nav-stacked" id="brandList">
+                                    <c:forEach var="entry" items="${brandMap}" varStatus="status">
+                                        <c:set var="brand" value="${entry.key}" />
                                         <c:set var="count" value="${entry.value}" />
-                                        <li>
-                                            <a href="product-list?brand=${b.brandID}">
+                                        <li class="brand-item ${status.index >= 5 ? 'd-none' : ''}">
+                                            <a href="product-list?brand=${brand.brandID}
+                                               <c:if test='${not empty param.search}'>&search=${fn:escapeXml(param.search)}</c:if>
+                                               <c:if test='${not empty param.category}'>&category=${param.category}</c:if>
+                                               <c:if test='${not empty param.sort}'>&sort=${param.sort}</c:if>">
                                                 <span class="pull-right">(${count})</span>
-                                                ${b.brandName}
+                                                ${brand.brandName}
                                             </a>
+
                                         </li>
                                     </c:forEach>
                                 </ul>
+                                <div style="text-align: center; margin-top: 10px;">
+                                    <button id="toggleBrandBtn" onclick="toggleBrandList()" style="
+                                            background-color: #FE980F;
+                                            color: white;
+                                            border: none;
+                                            padding: 6px 12px;
+                                            border-radius: 6px;
+                                            cursor: pointer;
+                                            font-weight: bold;">
+                                        Xem thêm
+                                    </button>
+                                </div>
                             </div>
-                        </div><!--/brands_products-->
+                        </div>
+                        <script>
+                            function toggleBrandList() {
+                                const hiddenItems = document.querySelectorAll(".brand-item.d-none");
+                                const button = document.getElementById("toggleBrandBtn");
 
-                        <div class="price-range"><!--price-range-->
-                            <h2>Price Range</h2>
-                            <div class="well">
-                                <input type="text" class="span2" value="" data-slider-min="0" data-slider-max="600" data-slider-step="5" data-slider-value="[250,450]" id="sl2" ><br />
-                                <b>$ 0</b> <b class="pull-right">$ 600</b>
-                            </div>
-                        </div><!--/price-range-->
+                                if (hiddenItems.length > 0) {
+                                    hiddenItems.forEach(item => item.classList.remove("d-none"));
+                                    button.textContent = "Ẩn bớt";
+                                } else {
+                                    const allItems = document.querySelectorAll(".brand-item");
+                                    allItems.forEach((item, index) => {
+                                        if (index >= 5)
+                                            item.classList.add("d-none");
+                                    });
+                                    button.textContent = "Xem thêm";
+                                }
+                            }
+                        </script> <!<!-- brand -->
+
+
+                        <!--                        <div class="price-range">price-range
+                                                    <h2>Price Range</h2>
+                                                    <div class="well">
+                                                        <input type="text" class="span2" value="" data-slider-min="0" data-slider-max="600" data-slider-step="5" data-slider-value="[250,450]" id="sl2" ><br />
+                                                        <b>$ 0</b> <b class="pull-right">$ 600</b>
+                                                    </div>
+                                                </div>/price-range-->
 
                         <div class="shipping text-center"><!--shipping-->
                             <img src="images/home/shipping.jpg" alt="" />
@@ -282,6 +424,7 @@
                     <div class="features_items"><!--features_items-->
                         <div class="text-right mb-3" style="margin-bottom: 20px;">
                             <form method="get" action="product-list" class="form-inline" style="display: inline-flex; align-items: center; gap: 6px;">
+                                <input type="hidden" name="search" value="${param.search}">
                                 <input type="hidden" name="category" value="${param.category}">
                                 <input type="hidden" name="brand" value="${param.brand}">
                                 <input type="hidden" name="page" value="${currentPage}">
@@ -301,7 +444,8 @@
                                 <div class="product-image-wrapper">
                                     <div class="single-products">
                                         <div class="productinfo text-center">
-                                            <img src="${p.image}" alt="" style="height:200px; object-fit:cover;" />
+                                            <img src="${p.image}" alt="${p.productName}" style="height:180px; width:100%; object-fit:cover; display:block;" />
+
                                             <h2>$${p.price}</h2>
                                             <p>${p.productName}</p>
                                             <a href="#" class="btn btn-default add-to-cart">
@@ -318,12 +462,12 @@
                                             </div>
                                         </div>
                                     </div>
-<!--                                    <div class="choose">
-                                        <ul class="nav nav-pills nav-justified">
-                                            <li><a href=""><i class="fa fa-plus-square"></i>Add to wishlist</a></li>
-                                            <li><a href=""><i class="fa fa-plus-square"></i>Add to compare</a></li>
-                                        </ul>
-                                    </div>-->
+                                    <!--                                    <div class="choose">
+                                                                            <ul class="nav nav-pills nav-justified">
+                                                                                <li><a href=""><i class="fa fa-plus-square"></i>Add to wishlist</a></li>
+                                                                                <li><a href=""><i class="fa fa-plus-square"></i>Add to compare</a></li>
+                                                                            </ul>
+                                                                        </div>-->
                                 </div>
                             </div>
                         </c:forEach>
