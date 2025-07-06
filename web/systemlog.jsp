@@ -1,4 +1,4 @@
-<%@ page contentType="text/html" pageEncoding="UTF-8" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <!DOCTYPE html>
 <html lang="en">
@@ -8,67 +8,94 @@
     <title>System Logs</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: #fce4ec;
-            margin: 0;
-            padding: 0;
+            font-family: 'Roboto', sans-serif;
+            background-color: #f8f3f3;
+            color: #333;
         }
-        header {
-            background-color: #f06292;
-            color: white;
-            padding: 15px;
+        h2 {
             text-align: center;
+            color: #e91e63;
+            margin-top: 30px;
         }
         table {
-            width: 100%;
+            width: 90%;
+            margin: 40px auto;
             border-collapse: collapse;
-            margin-top: 20px;
+            background: #fff;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border-radius: 10px;
         }
         th, td {
-            padding: 12px;
-            text-align: left;
+            padding: 16px;
             border-bottom: 1px solid #ddd;
         }
         th {
-            background-color: #f06292;
-            color: white;
+            background-color: #fce4ec;
+            color: #e91e63;
         }
-        td {
-            background-color: #f8bbd0;
+        tr:hover {
+            background-color: #f9f9f9;
+        }
+        .btn {
+            display: block;
+            width: 180px;
+            margin: 30px auto;
+            padding: 10px;
+            background: #e91e63;
+            color: white;
+            text-align: center;
+            border-radius: 5px;
+            text-decoration: none;
+        }
+        .btn:hover {
+            background: #d81b60;
+        }
+        .no-logs {
+            text-align: center;
+            color: #d32f2f;
+            font-size: 1.3rem;
+            font-weight: 500;
         }
     </style>
 </head>
 <body>
-    <header>
-        <h1>System Log - Recent Logins</h1>
-    </header>
+    <h2>Danh Sách Log Hệ Thống</h2>
 
-    <table>
-        <thead>
-            <tr>
-                <th>Log ID</th>
-                <th>Username</th>
-                <th>Email</th>
-                <th>Role</th>
-                <th>Login Time</th>
-                <th>Login Date</th>
-                <th>Timestamp</th>
-            </tr>
-        </thead>
-        <tbody>
-            <!-- Hiển thị thông tin log từ Servlet -->
-            <c:forEach var="log" items="${logEntries}">
+    <!-- Nếu có log -->
+    <c:if test="${not empty systemLogs}">
+        <table>
+            <thead>
                 <tr>
-                    <td>${log.logId}</td>
-                    <td>${log.username}</td>
-                    <td>${log.email}</td>
-                    <td>${log.role}</td>
-                    <td>${log.loginTime}</td>
-                    <td>${log.loginDate}</td>
-                    <td>${log.timestamp}</td>
+                    <th>Log ID</th>
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Login Time</th>
+                    <th>Login Date</th>
+                    <th>Timestamp</th>
                 </tr>
-            </c:forEach>
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                <c:forEach var="log" items="${systemLogs}">
+                    <tr>
+                        <td>${log.logId}</td>
+                        <td>${log.username}</td>
+                        <td>${log.email}</td>
+                        <td>${log.role}</td>
+                        <td>${log.loginTime}</td>
+                        <td>${log.loginDate}</td>
+                        <td>${log.timestamp}</td>
+                    </tr>
+                </c:forEach>
+            </tbody>
+        </table>
+    </c:if>
+
+    <!-- Nếu không có log -->
+    <c:if test="${empty systemLogs}">
+        <p class="no-logs">Chưa có log nào!</p>
+    </c:if>
+
+    <a href="/" class="btn">Quay lại trang chủ</a>
 </body>
 </html>
