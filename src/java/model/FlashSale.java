@@ -11,8 +11,8 @@ import java.util.Date;
  * @author daidu
  */
 public class FlashSale {
-    private int saleID;
-    private int categoryID;
+    private int saleId;
+    private int categoryId;
     private Date startTime;
     private Date endTime;
     private int discountPercent;
@@ -20,28 +20,28 @@ public class FlashSale {
     public FlashSale() {
     }
 
-    public FlashSale(int saleID, int categoryID, Date startTime, Date endTime, int discountPercent) {
-        this.saleID = saleID;
-        this.categoryID = categoryID;
+    public FlashSale(int saleId, int categoryId, Date startTime, Date endTime, int discountPercent) {
+        this.saleId = saleId;
+        this.categoryId = categoryId;
         this.startTime = startTime;
         this.endTime = endTime;
         this.discountPercent = discountPercent;
     }
 
-    public int getSaleID() {
-        return saleID;
+    public int getSaleId() {
+        return saleId;
     }
 
-    public void setSaleID(int saleID) {
-        this.saleID = saleID;
+    public void setSaleId(int saleId) {
+        this.saleId = saleId;
     }
 
-    public int getCategoryID() {
-        return categoryID;
+    public int getCategoryId() {
+        return categoryId;
     }
 
-    public void setCategoryID(int categoryID) {
-        this.categoryID = categoryID;
+    public void setCategoryId(int categoryId) {
+        this.categoryId = categoryId;
     }
 
     public Date getStartTime() {
@@ -70,7 +70,7 @@ public class FlashSale {
 
     @Override
     public String toString() {
-        return "FlashSale{" + "saleID=" + saleID + ", categoryID=" + categoryID + ", startTime=" + startTime + ", endTime=" + endTime + ", discountPercent=" + discountPercent + '}';
+        return "FlashSale{" + "saleId=" + saleId + ", categoryId=" + categoryId + ", startTime=" + startTime + ", endTime=" + endTime + ", discountPercent=" + discountPercent + '}';
     }
     
     
