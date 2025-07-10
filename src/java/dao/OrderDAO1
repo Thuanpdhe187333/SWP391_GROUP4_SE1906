@@ -47,7 +47,6 @@ public class OrderDAO extends DBContext {
         return list;
     }
 
-    // Lấy đơn theo UserID
     public List<Order> getOrdersByUser(int userId) {
         List<Order> list = new ArrayList<>();
         String sql = "SELECT * FROM `Order` WHERE UserID = ? ORDER BY OrderDate DESC";
