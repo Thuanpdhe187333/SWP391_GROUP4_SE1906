@@ -17,7 +17,6 @@ public class OrderDAO {
         this.conn = dbContext.getConnection();
     }
 
-    // Insert new order
     public boolean insertOrder(Order order) throws SQLException {
         String sql = "INSERT INTO Orders (userId, orderDate, shippingAddress, totalAmount, status) VALUES (?, ?, ?, ?, ?)";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
