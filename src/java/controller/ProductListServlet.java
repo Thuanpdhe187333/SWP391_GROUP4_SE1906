@@ -91,14 +91,21 @@ public class ProductListServlet extends HttpServlet {
         int totalProducts = filteredList.size();
         int totalPages = (int) Math.ceil((double) totalProducts / pageSize);
         int fromIndex = (currentPage - 1) * pageSize;
-        int toIndex = Math.min(fromIndex + pageSize, totalProducts);
-        List<Product> pagedList = filteredList.subList(fromIndex, toIndex);
+int toIndex = Math.min(fromIndex + pageSize, totalProducts);
+List<Product> pagedList;
+
+if (fromIndex >= totalProducts || fromIndex < 0) {
+    pagedList = List.of(); // hoặc new ArrayList<>()
+} else {
+    pagedList = filteredList.subList(fromIndex, toIndex);
+}
+
 
         // Gửi danh sách sản phẩm và thông tin phân trang
         request.setAttribute("productList", pagedList);
         request.setAttribute("currentPage", currentPage);
         request.setAttribute("totalPages", totalPages);
-
+        
         // Gửi lại các tham số để giữ trạng thái giao diện
         request.setAttribute("sort", sort);
         request.setAttribute("category", categoryParam);
@@ -109,7 +116,7 @@ public class ProductListServlet extends HttpServlet {
         CategoryDAO categoryDao = new CategoryDAO();
         List<Category> parents = categoryDao.getParentCategories();
         for (Category parent : parents) {
-            List<Category> children = categoryDao.getChildCategories(parent.getCategoryID());
+            List<Category> children = categoryDao.getChildCategories(parent.getCategoryId());
             parent.setChildren(children);
         }
         request.setAttribute("categoryList", parents);
