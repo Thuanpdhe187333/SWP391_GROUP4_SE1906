@@ -59,17 +59,17 @@ public class ProductServlet extends HttpServlet {
             
             Map<Integer, String> categoryMap = new HashMap<>(); //Hien thi CateName trong list edit
             for (Category c : categoryList) {
-                categoryMap.put(c.getCategoryID(), c.getCategoryName());
+                categoryMap.put(c.getCategoryId(), c.getCategoryName());
             }
 
             Map<Integer, String> brandMap = new HashMap<>(); //Hien thi Brandname trong list edit
             for (Brand b : brandList) {
-                brandMap.put(b.getBrandID(), b.getBrandName());
+                brandMap.put(b.getBrandId(), b.getBrandName());
             }
             
             Map<Integer, String> labelMap = new HashMap<>();
             for (Label l : labelList) {
-                labelMap.put(l.getLabelID(), l.getLabelName());//Hien thi Labelname trong list edit
+                labelMap.put(l.getLabelId(), l.getLabelName());//Hien thi Labelname trong list edit
             }
 
             request.setAttribute("categoryMap", categoryMap);
@@ -95,18 +95,23 @@ public class ProductServlet extends HttpServlet {
             double price = Double.parseDouble(request.getParameter("price"));
             int quantity = Integer.parseInt(request.getParameter("quantity"));
             String image = request.getParameter("image");
-            int categoryID = Integer.parseInt(request.getParameter("categoryID"));
-            String labelRaw = request.getParameter("labelID");
-            Integer labelID = (labelRaw == null || labelRaw.isEmpty()) ? null : Integer.parseInt(labelRaw);
-            int brandID = Integer.parseInt(request.getParameter("brandID"));
+            int categoryId = Integer.parseInt(request.getParameter("categoryId"));
+            String labelRaw = request.getParameter("labelId");
+            Integer labelId = (labelRaw == null || labelRaw.isEmpty()) ? null : Integer.parseInt(labelRaw);
+            int brandId = Integer.parseInt(request.getParameter("brandId"));
+            String usage = request.getParameter("usage");
+            String ingredients = request.getParameter("ingredients");
+            String howToUse = request.getParameter("howToUse");
+            String note = request.getParameter("note");
+            String preservation = request.getParameter("preservation");
 
             if (idRaw == null || idRaw.isEmpty()) {
                 
-                dao.addProduct(name, desc, price, quantity, image, categoryID, labelID, brandID);
+                dao.addProduct(name, desc, price, quantity, image, categoryId, labelId, brandId, usage, ingredients, howToUse, note, preservation);
             } else {
                 
                 int id = Integer.parseInt(idRaw);
-                dao.editProduct(id, name, desc, price, quantity, image, categoryID, labelID, brandID);
+                dao.editProduct(id, name, desc, price, quantity, image, categoryId, labelId, brandId, usage, ingredients, howToUse, note, preservation);
             }
 
             
