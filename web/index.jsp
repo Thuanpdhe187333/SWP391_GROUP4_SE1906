@@ -600,5 +600,41 @@
                 });
             });
         </script>
+<%
+    // Giả lập người dùng đang đăng nhập
+    String userId = "user1";
+    String calleeId = "user2";
+%>
+<html>
+<head>
+    <title>Trang chính</title>
+    <style>
+        .video-call-icon {
+            font-size: 40px;
+            color: #007bff;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .video-call-icon:hover {
+            transform: scale(1.2);
+        }
+    </style>
+
+    <!-- Font Awesome để có icon video -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+
+<h2>Chào <%= userId %> 👋</h2>
+
+<p>Bấm vào biểu tượng dưới đây để bắt đầu gọi video:</p>
+
+<!-- Icon gọi video -->
+<a href="call.jsp?userId=<%= userId %>&calleeId=<%= calleeId %>">
+    <i class="fas fa-video video-call-icon"></i>
+</a>
+
+</body>
+</html>
     </body>
 </html>
